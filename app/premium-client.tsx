@@ -74,7 +74,7 @@ function formatDate(timestamp: string) {
   return new Intl.DateTimeFormat('en-US', {
     hour: 'numeric',
     minute: '2-digit',
-    hour12: true
+    hour12: true,
   }).format(date);
 }
 
@@ -98,7 +98,7 @@ async function authedFetch<T>(token: string, endpoint: string, options?: Request
     ...options,
     headers: {
       ...options?.headers,
-      'Authorization': `Bot ${token}`,
+      Authorization: `Bot ${token}`,
       'Content-Type': 'application/json',
     },
     cache: 'no-store',
@@ -121,12 +121,13 @@ async function authedFetch<T>(token: string, endpoint: string, options?: Request
 const PremiumButton: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' }
 > = ({ children, className = '', variant = 'secondary', ...props }) => {
-  const baseClasses = "px-4 py-2 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-white/20";
+  const baseClasses =
+    'px-4 py-2 rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-white/20';
   const variantClasses =
     variant === 'primary'
-      ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg"
-      : "glass-base hover:bg-white/10";
-  
+      ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-lg'
+      : 'glass-base hover:bg-white/10';
+
   return (
     <button className={`${baseClasses} ${variantClasses} ${className}`} {...props}>
       {children}
@@ -134,26 +135,34 @@ const PremiumButton: React.FC<
   );
 };
 
-const PremiumInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className = '', ...props }) => (
+const PremiumInput: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
+  className = '',
+  ...props
+}) => (
   <input
     className={`glass-base rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 ${className}`}
     {...props}
   />
 );
 
-const PremiumTextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({ className = '', ...props }) => (
+const PremiumTextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({
+  className = '',
+  ...props
+}) => (
   <textarea
     className={`glass-base rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-white/20 resize-none min-h-[60px] ${className}`}
     {...props}
   />
 );
 
-const PremiumCard: React.FC<{ children: React.ReactNode; className?: string; interactive?: boolean }> = ({
-  children,
-  className = '',
-  interactive = false,
-}) => (
-  <div className={`liquid-glass glass-base rounded-xl p-6 ${interactive ? 'premium-interactive' : ''} ${className}`}>
+const PremiumCard: React.FC<{
+  children: React.ReactNode;
+  className?: string;
+  interactive?: boolean;
+}> = ({ children, className = '', interactive = false }) => (
+  <div
+    className={`liquid-glass glass-base rounded-xl p-6 ${interactive ? 'premium-interactive' : ''} ${className}`}
+  >
     {children}
   </div>
 );
@@ -172,10 +181,10 @@ const EnhancedMessage: React.FC<{
   const [editContent, setEditContent] = useState(message.content);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
   const isCurrentUser = message.author.id === currentUser?.id;
   const hasAttachments = message.attachments && message.attachments.length > 0;
-  
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -197,7 +206,7 @@ const EnhancedMessage: React.FC<{
     }
     setShowMenu(false);
   };
-  
+
   return (
     <div
       id={`message-${message.id}`}
@@ -209,7 +218,7 @@ const EnhancedMessage: React.FC<{
         onClick={() => onUserClick?.(message.author)}
         className="w-10 h-10 rounded-full cursor-pointer hover:scale-105 transition-transform flex-shrink-0"
       />
-      
+
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2 mb-1">
           <button
@@ -221,11 +230,9 @@ const EnhancedMessage: React.FC<{
             {formatUser(message.author)}
           </button>
           <span className="text-xs text-white/50">{formatDate(message.timestamp)}</span>
-          {message.edited_timestamp && (
-            <span className="text-xs text-white/50">(edited)</span>
-          )}
+          {message.edited_timestamp && <span className="text-xs text-white/50">(edited)</span>}
         </div>
-        
+
         <div className="relative">
           {isEditing ? (
             <div className="space-y-2">
@@ -247,10 +254,10 @@ const EnhancedMessage: React.FC<{
           ) : (
             <p className="whitespace-pre-wrap break-words">{message.content}</p>
           )}
-          
+
           {hasAttachments && (
             <div className="mt-2 space-y-2">
-              {message.attachments?.map(attachment => (
+              {message.attachments?.map((attachment) => (
                 <div key={attachment.id} className="glass-base p-2 rounded-lg inline-block">
                   <a
                     href={attachment.url}
@@ -264,7 +271,7 @@ const EnhancedMessage: React.FC<{
               ))}
             </div>
           )}
-          
+
           <div className="absolute -top-2 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -273,12 +280,18 @@ const EnhancedMessage: React.FC<{
               ⋮
             </button>
           </div>
-          
+
           {showMenu && (
-            <div ref={menuRef} className="absolute right-0 top-8 w-32 glass-base rounded-lg shadow-lg z-20">
+            <div
+              ref={menuRef}
+              className="absolute right-0 top-8 w-32 glass-base rounded-lg shadow-lg z-20"
+            >
               {isCurrentUser && (
                 <button
-                  onClick={() => { setIsEditing(true); setShowMenu(false); }}
+                  onClick={() => {
+                    setIsEditing(true);
+                    setShowMenu(false);
+                  }}
                   className="w-full text-left px-3 py-2 text-sm hover:bg-white/10 rounded-t-lg"
                 >
                   ✏️ Edit
@@ -294,7 +307,10 @@ const EnhancedMessage: React.FC<{
               )}
               {!isCurrentUser && (
                 <button
-                  onClick={() => { onReply?.(message); setShowMenu(false); }}
+                  onClick={() => {
+                    onReply?.(message);
+                    setShowMenu(false);
+                  }}
                   className="w-full text-left px-3 py-2 text-sm hover:bg-white/10"
                 >
                   ↩️ Reply
@@ -315,24 +331,24 @@ export default function PremiumDiscordClient() {
   const [tokenInput, setTokenInput] = useState('');
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [botUser, setBotUser] = useState<PremiumUser | null>(null);
-  
+
   // Data state
   const [guilds, setGuilds] = useState<PremiumGuild[]>([]);
   const [selectedGuildId, setSelectedGuildId] = useState<string | null>(null);
   const [channels, setChannels] = useState<DiscordChannel[]>([]);
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
   const [roles, setRoles] = useState<DiscordRole[]>([]);
-  
+
   // Messages
   const [messages, setMessages] = useState<DiscordMessage[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [replyingTo, setReplyingTo] = useState<DiscordMessage | null>(null);
-  
+
   // UI state
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Modals
   const [userProfile, setUserProfile] = useState<PremiumUser | null>(null);
   const [showProfile, setShowProfile] = useState(false);
@@ -373,7 +389,7 @@ export default function PremiumDiscordClient() {
   // API Calls
   const authenticate = async () => {
     if (!authToken) return;
-    
+
     setIsAuthenticating(true);
     try {
       const user = await authedFetch<PremiumUser>(authToken, '/users/@me');
@@ -410,15 +426,15 @@ export default function PremiumDiscordClient() {
     try {
       const [channelData, roleData] = await Promise.all([
         authedFetch<DiscordChannel[]>(authToken, `/guilds/${selectedGuildId}/channels`),
-        authedFetch<DiscordRole[]>(authToken, `/guilds/${selectedGuildId}/roles`)
+        authedFetch<DiscordRole[]>(authToken, `/guilds/${selectedGuildId}/roles`),
       ]);
-      
+
       const sortedChannels = [...channelData].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
       setChannels(sortedChannels);
       setRoles(roleData);
-      
-      const textChannels = sortedChannels.filter(c => c.type === 0);
-      if (!selectedChannelId || !textChannels.some(c => c.id === selectedChannelId)) {
+
+      const textChannels = sortedChannels.filter((c) => c.type === 0);
+      if (!selectedChannelId || !textChannels.some((c) => c.id === selectedChannelId)) {
         setSelectedChannelId(textChannels[0]?.id || null);
       }
     } catch (error) {
@@ -435,7 +451,10 @@ export default function PremiumDiscordClient() {
     }
     setIsLoading(true);
     try {
-      const data = await authedFetch<DiscordMessage[]>(authToken, `/channels/${selectedChannelId}/messages?limit=50`);
+      const data = await authedFetch<DiscordMessage[]>(
+        authToken,
+        `/channels/${selectedChannelId}/messages?limit=50`
+      );
       setMessages(data.reverse());
     } catch (error) {
       console.error('Failed to load messages:', error);
@@ -448,13 +467,13 @@ export default function PremiumDiscordClient() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!tokenInput.trim()) return;
-    
+
     const token = tokenInput.trim();
     try {
       setIsAuthenticating(true);
       const user = await authedFetch<PremiumUser>(token, '/users/@me');
       if (!user.bot) throw new Error('Not a bot token');
-      
+
       setBotUser(user);
       setAuthToken(token);
       localStorage.setItem('discord-bot-token', token);
@@ -483,7 +502,7 @@ export default function PremiumDiscordClient() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authToken || !selectedChannelId || !messageInput.trim()) return;
-    
+
     try {
       await authedFetch(`${authToken}`, `/channels/${selectedChannelId}/messages`, {
         method: 'POST',
@@ -499,14 +518,10 @@ export default function PremiumDiscordClient() {
   const handleEditMessage = async (message: DiscordMessage) => {
     if (!authToken || !selectedChannelId) return;
     try {
-      await authedFetch(
-        `${authToken}`,
-        `/channels/${selectedChannelId}/messages/${message.id}`,
-        {
-          method: 'PATCH',
-          body: JSON.stringify({ content: message.content }),
-        }
-      );
+      await authedFetch(`${authToken}`, `/channels/${selectedChannelId}/messages/${message.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ content: message.content }),
+      });
       loadMessages();
     } catch (error) {
       console.error('Failed to edit message:', error);
@@ -517,7 +532,9 @@ export default function PremiumDiscordClient() {
     if (!authToken || !selectedChannelId) return;
     authedFetch(`${authToken}`, `/channels/${selectedChannelId}/messages/${messageId}`, {
       method: 'DELETE',
-    }).then(loadMessages).catch(console.error);
+    })
+      .then(loadMessages)
+      .catch(console.error);
   };
 
   // Login Screen
@@ -531,8 +548,10 @@ export default function PremiumDiscordClient() {
             </div>
           </div>
           <h1 className="text-3xl font-bold text-center mb-4">BotClienty Premium</h1>
-          <p className="text-white/70 text-center mb-8 italic">Premium Discord client with glassmorphic styling</p>
-          
+          <p className="text-white/70 text-center mb-8 italic">
+            Premium Discord client with glassmorphic styling
+          </p>
+
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">Bot Token</label>
@@ -544,14 +563,19 @@ export default function PremiumDiscordClient() {
                 autoFocus
               />
             </div>
-            
+
             {authError && (
               <div className="glass-base p-3 rounded-lg border border-red-500/50 rounded-lg">
                 <p className="text-red-400 text-sm">⚠️ {authError}</p>
               </div>
             )}
-            
-            <PremiumButton type="submit" variant="primary" className="w-full" disabled={isAuthenticating}>
+
+            <PremiumButton
+              type="submit"
+              variant="primary"
+              className="w-full"
+              disabled={isAuthenticating}
+            >
               {isAuthenticating ? (
                 <span className="flex items-center justify-center">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
@@ -562,7 +586,7 @@ export default function PremiumDiscordClient() {
               )}
             </PremiumButton>
           </form>
-          
+
           <div className="mt-8 pt-6 border-t border-white/10">
             <h3 className="font-semibold mb-4">Premium Features</h3>
             <div className="space-y-2">
@@ -578,10 +602,10 @@ export default function PremiumDiscordClient() {
       </div>
     );
   }
-  
-  const selectedGuild = guilds.find(g => g.id === selectedGuildId);
-  const selectedChannel = channels.find(c => c.id === selectedChannelId);
-  
+
+  const selectedGuild = guilds.find((g) => g.id === selectedGuildId);
+  const selectedChannel = channels.find((c) => c.id === selectedChannelId);
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-blue-900 text-white">
       {/* Server Sidebar */}
@@ -590,7 +614,7 @@ export default function PremiumDiscordClient() {
           🏠
         </div>
         <div className="w-8 h-px bg-white/10" />
-        {guilds.map(guild => (
+        {guilds.map((guild) => (
           <button
             key={guild.id}
             onClick={() => {
@@ -604,25 +628,31 @@ export default function PremiumDiscordClient() {
             title={guild.name}
           >
             {guild.icon ? (
-              <img src={guildIconUrl(guild)} alt={guild.name} className="w-full h-full object-cover" />
+              <img
+                src={guildIconUrl(guild)}
+                alt={guild.name}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <span className="font-bold text-sm">{guild.name.charAt(0)}</span>
             )}
           </button>
         ))}
       </nav>
-      
+
       {/* Channel Sidebar */}
       <aside className="w-72 glass-base border-r border-white/10 flex flex-col">
         <header className="liquid-glass p-4 border-b border-white/10">
           <h2 className="font-bold text-lg truncate">{selectedGuild?.name || 'Loading...'}</h2>
-          <p className="text-sm text-white/60 font-medium">{botUser.global_name || botUser.username}</p>
+          <p className="text-sm text-white/60 font-medium">
+            {botUser.global_name || botUser.username}
+          </p>
         </header>
-        
+
         <div className="flex-1 overflow-y-auto p-4 space-y-1">
           {channels
-            .filter(c => c.type === 0)
-            .map(channel => (
+            .filter((c) => c.type === 0)
+            .map((channel) => (
               <button
                 key={channel.id}
                 onClick={() => setSelectedChannelId(channel.id)}
@@ -634,19 +664,23 @@ export default function PremiumDiscordClient() {
                 <span className="text-sm truncate">{channel.name}</span>
               </button>
             ))}
-          {channels.filter(c => c.type === 0).length === 0 && !isLoading && (
+          {channels.filter((c) => c.type === 0).length === 0 && !isLoading && (
             <p className="text-white/50 text-sm">No text channels in this server</p>
           )}
         </div>
-        
+
         <div className="liquid-glass p-4 border-t border-white/10">
-          <PremiumButton variant="secondary" className="w-full flex items-center justify-center gap-3" onClick={handleLogout}>
+          <PremiumButton
+            variant="secondary"
+            className="w-full flex items-center justify-center gap-3"
+            onClick={handleLogout}
+          >
             <div className="w-4 h-4 rounded-full bg-gradient-to-r from-red-500 to-orange-500" />
             <span>Logout Premium Bot</span>
           </PremiumButton>
         </div>
       </aside>
-      
+
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col bg-black/20">
         {/* Chat Header */}
@@ -656,7 +690,7 @@ export default function PremiumDiscordClient() {
             {selectedChannel?.topic || 'No topic set for this channel'}
           </p>
         </header>
-        
+
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto p-4 space-y-1">
           {isLoading ? (
@@ -672,11 +706,13 @@ export default function PremiumDiscordClient() {
                 💬
               </div>
               <h3 className="text-xl font-semibold mb-2">No messages yet</h3>
-              <p className="text-white/60 max-w-xs mx-auto">Start the conversation with the premium chat experience!</p>
+              <p className="text-white/60 max-w-xs mx-auto">
+                Start the conversation with the premium chat experience!
+              </p>
             </div>
           ) : (
             <div className="space-y-0">
-              {messages.map(message => (
+              {messages.map((message) => (
                 <EnhancedMessage
                   key={message.id}
                   message={message}
@@ -684,13 +720,16 @@ export default function PremiumDiscordClient() {
                   onEdit={handleEditMessage}
                   onDelete={handleDeleteMessage}
                   onReply={setReplyingTo}
-                  onUserClick={(user) => { setUserProfile(user); setShowProfile(true); }}
+                  onUserClick={(user) => {
+                    setUserProfile(user);
+                    setShowProfile(true);
+                  }}
                 />
               ))}
             </div>
           )}
         </div>
-        
+
         {/* Message Composer */}
         <footer className="liquid-glass p-4 border-t border-white/10">
           {replyingTo && (
@@ -698,23 +737,30 @@ export default function PremiumDiscordClient() {
               <div className="text-sm flex items-center gap-2">
                 <span className="text-purple-400">↳</span>
                 <span>Replying to {formatUser(replyingTo.author)}</span>
-                <span className="text-white/60 truncate max-w-xs">{replyingTo.content.slice(0, 50)}</span>
+                <span className="text-white/60 truncate max-w-xs">
+                  {replyingTo.content.slice(0, 50)}
+                </span>
               </div>
-              <button onClick={() => setReplyingTo(null)} className="text-white/60 hover:text-white text-lg">
+              <button
+                onClick={() => setReplyingTo(null)}
+                className="text-white/60 hover:text-white text-lg"
+              >
                 ×
               </button>
             </div>
           )}
-          
+
           {uploadFiles.length > 0 && (
             <div className="glass-base p-3 rounded-lg mb-3">
               <h4 className="text-sm font-medium mb-2">Attachments ({uploadFiles.length})</h4>
               <div className="space-y-2">
                 {uploadFiles.map((file, index) => (
                   <div key={index} className="flex justify-between items-center text-sm">
-                    <span className="truncate">📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)</span>
+                    <span className="truncate">
+                      📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)
+                    </span>
                     <button
-                      onClick={() => setUploadFiles(prev => prev.filter((_, i) => i !== index))}
+                      onClick={() => setUploadFiles((prev) => prev.filter((_, i) => i !== index))}
                       className="text-red-400 hover:text-red-300 text-sm"
                     >
                       Remove
@@ -724,7 +770,7 @@ export default function PremiumDiscordClient() {
               </div>
             </div>
           )}
-          
+
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <input
               type="file"
@@ -733,7 +779,7 @@ export default function PremiumDiscordClient() {
               id="file-upload"
               onChange={(e) => {
                 const files = e.target.files ? Array.from(e.target.files) : [];
-                setUploadFiles(prev => [...prev, ...files]);
+                setUploadFiles((prev) => [...prev, ...files]);
               }}
             />
             <label
@@ -743,11 +789,11 @@ export default function PremiumDiscordClient() {
             >
               📎
             </label>
-            
+
             <PremiumTextArea
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
-              placeholder={selectedChannelId ? "Type a message..." : "Select a channel first"}
+              placeholder={selectedChannelId ? 'Type a message...' : 'Select a channel first'}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -757,11 +803,15 @@ export default function PremiumDiscordClient() {
               className="flex-1"
               disabled={!selectedChannelId}
             />
-            
+
             <PremiumButton
               type="submit"
               variant="primary"
-              disabled={!selectedChannelId || (!messageInput.trim() && uploadFiles.length === 0) || isLoading}
+              disabled={
+                !selectedChannelId ||
+                (!messageInput.trim() && uploadFiles.length === 0) ||
+                isLoading
+              }
             >
               {isLoading ? (
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -772,7 +822,7 @@ export default function PremiumDiscordClient() {
           </form>
         </footer>
       </main>
-      
+
       {/* Right Sidebar */}
       <aside className="hidden lg:flex w-80 glass-base border-l border-white/10 p-4 flex-col">
         <div className="mb-6 liquid-glass p-4 rounded-lg">
@@ -788,11 +838,15 @@ export default function PremiumDiscordClient() {
             </div>
             <div className="flex justify-between">
               <span className="text-white/60">Prefix:</span>
-              <span className="font-mono">{String.fromCodePoint(Number((BigInt(selectedChannelId || '0') >> BigInt(22)) % BigInt(6)) + 0x1F500)}</span>
+              <span className="font-mono">
+                {String.fromCodePoint(
+                  Number((BigInt(selectedChannelId || '0') >> BigInt(22)) % BigInt(6)) + 0x1f500
+                )}
+              </span>
             </div>
           </div>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto">
           <h3 className="font-semibold mb-3">Premium Features</h3>
           <div className="space-y-2 text-sm">
@@ -811,7 +865,7 @@ export default function PremiumDiscordClient() {
             ))}
           </div>
         </div>
-        
+
         <div className="mt-6 pt-4 border-t border-white/10">
           <div className="flex items-center gap-3">
             <img
@@ -826,18 +880,24 @@ export default function PremiumDiscordClient() {
           </div>
         </div>
       </aside>
-      
+
       {/* User Profile Modal */}
       {showProfile && userProfile && (
         <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setShowProfile(false)}
         >
-          <div className="glass-base rounded-2xl max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="glass-base rounded-2xl max-w-lg w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="liquid-glass p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">User Profile</h2>
-                <button onClick={() => setShowProfile(false)} className="text-white/60 hover:text-white text-2xl">
+                <button
+                  onClick={() => setShowProfile(false)}
+                  className="text-white/60 hover:text-white text-2xl"
+                >
                   ×
                 </button>
               </div>
@@ -849,7 +909,9 @@ export default function PremiumDiscordClient() {
                 />
                 <div className="flex-1">
                   <h3 className="text-xl font-bold">{formatUser(userProfile)}</h3>
-                  <p className="text-white/60">ID: <span className="font-mono">{userProfile.id}</span></p>
+                  <p className="text-white/60">
+                    ID: <span className="font-mono">{userProfile.id}</span>
+                  </p>
                   <p className="text-white/60">Bot: {userProfile.bot ? '✅ Yes' : '❌ No'}</p>
                   <PremiumButton
                     className="mt-3"
