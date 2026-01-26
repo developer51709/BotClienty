@@ -251,10 +251,44 @@ pre code {
   border-radius: 3px;
   font-weight: 500;
   cursor: pointer;
+  display: inline;
 }
 
 .mention:hover {
   background: rgba(88, 101, 242, 0.4);
+  text-decoration: underline;
+}
+
+/* Markdown inline code styling */
+code {
+  font-family: 'Consolas', 'Courier New', monospace;
+  background: rgba(79, 84, 92, 0.3);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.875em;
+  color: var(--text-primary);
+}
+
+/* Spoiler tags */
+.spoiler {
+  background: rgba(0, 0, 0, 0.3);
+  color: transparent;
+  cursor: pointer;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+.spoiler:hover {
+  color: var(--text-primary);
+}
+
+/* Discord-style links */
+a {
+  color: var(--text-link);
+  text-decoration: none;
+}
+
+a:hover {
   text-decoration: underline;
 }
 
