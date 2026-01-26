@@ -788,7 +788,7 @@ export default function PremiumDiscordClient() {
             </div>
             <div className="flex justify-between">
               <span className="text-white/60">Prefix:</span>
-              <span className="font-mono">{String.fromCodePoint(Number((BigInt(selectedChannelId || '0') >> 22n) % 6n) + 0x1F500)}</span>
+              <span className="font-mono">{String.fromCodePoint(Number((BigInt(selectedChannelId || '0') >> BigInt(22)) % BigInt(6)) + 0x1F500)}</span>
             </div>
           </div>
         </div>
