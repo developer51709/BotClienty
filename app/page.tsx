@@ -1,5 +1,5 @@
-import EnhancedBotClient from './enhanced-page';
+import PremiumDiscordClient from './premium-client';
 
 export default function Home() {
-  return <EnhancedBotClient />;
+  return <PremiumDiscordClient />;
 }
