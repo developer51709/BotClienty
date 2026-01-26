@@ -1,5 +1,5 @@
-import PremiumDiscordClient from './premium-client';
+import DiscordClient from './client';
 
 export default function Home() {
-  return <PremiumDiscordClient />;
+  return <DiscordClient />;
 }
