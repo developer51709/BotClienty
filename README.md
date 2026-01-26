@@ -79,8 +79,13 @@
 | ⚡ **Real-time Updates** | View and send messages instantly | ✅ Ready |
 | 🖼️ **Rich Content Support** | Embeds, attachments and media | ✅ Ready |
 | 🚀 **Next.js Performance** | Optimized build and static export | ✅ Ready |
-
-</div>
+| 📁 **File Upload** | Send images, documents and media | 🆕 New |
+| 🔍 **Message Search** | Search through channel messages | 🆕 New |
+| ⚡ **Message Pagination** | Load more historical messages | 🆕 New |
+| 👤 **User Profiles** | View detailed user information | 🆕 New |
+| ⚙️ **Server Settings** | View guild information and settings | 🆕 New |
+| 😊 **Message Reactions** | Add and view emoji reactions | 🆕 New |
+| 📊 **Enhanced Loading** | Better error handling and loading states | 🆕 New |
 
 ---
 
@@ -150,6 +155,59 @@ npm run build
 # Artifacts in ./out ready for static hosting
 npm run export
 ```
+
+---
+
+## 🚀 Deployment on Render
+
+<div align="center">
+
+### Prerequisites
+
+<img src="https://img.shields.io/badge/Render-Deployment-1E3A8A?style=for-the-badge&logo=render&logoColor=white&labelColor=0F172A" alt="Render Deployment">
+
+</div>
+
+### Quick Deploy to Render
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy)
+
+1. **Connect your repository** to Render
+2. **Use the provided `render.yaml`** configuration
+3. **Environment variables** (if needed):
+   - `NODE_VERSION`: `18.17.0`
+   - `NPM_FLAGS`: `--production=false`
+4. **Deploy** - Render will automatically build and deploy
+
+### Manual Deployment Steps
+
+1. **Create a new Web Service** on [Render Dashboard](https://dashboard.render.com)
+2. **Connect your Git repository** (GitHub, GitLab, or Bitbucket)
+3. **Configure build settings**:
+   - **Build Command**: `npm install && npm run build`
+   - **Start Command**: `npm start`
+   - **Node Version**: `18.17.0`
+4. **Deploy** and wait for the build to complete
+
+### Environment Configuration
+
+```bash
+# Environment variables (optional)
+NODE_VERSION=18.17.0
+NPM_FLAGS=--production=false
+```
+
+### Deployment Features
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| 🔄 **Auto Deploy** | ✅ Ready | Push to deploy with Git |
+| 🌐 **Custom Domain** | ✅ Ready | Add your own domain |
+| 🔒 **HTTPS** | ✅ Ready | SSL certificate included |
+| 📊 **Analytics** | ✅ Ready | Built-in performance monitoring |
+| 🔧 **Environment Variables** | ✅ Ready | Secure configuration management |
+
+---
 
 ---
 
