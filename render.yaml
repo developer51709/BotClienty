@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: botclienty
+    env: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: NPM_FLAGS
+        value: --production=false
