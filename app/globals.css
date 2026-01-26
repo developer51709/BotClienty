@@ -5,45 +5,45 @@
   --bg-secondary: #2b2d31;
   --bg-tertiary: #313338;
   --bg-accent: #404249;
-  
+
   /* Interactive colors */
   --interactive-normal: #b5bac1;
   --interactive-hover: #dbdee1;
   --interactive-active: #f2f3f5;
-  
+
   /* Brand colors */
   --brand-primary: #5865f2;
   --brand-hover: #4752c4;
   --brand-active: #3c45a5;
-  
+
   /* Status colors */
   --status-online: #23a559;
   --status-idle: #f0b232;
   --status-dnd: #f23f43;
   --status-offline: #80848e;
-  
+
   /* Semantic colors */
   --success: #248046;
   --warning: #faa81a;
   --danger: #da373c;
   --info: #00a8fc;
-  
+
   /* Text colors */
   --text-primary: #f2f3f5;
   --text-secondary: #b5bac1;
   --text-muted: #80848e;
   --text-link: #00a8fc;
-  
+
   /* Border & shadow */
   --border-subtle: rgba(255, 255, 255, 0.08);
   --border-medium: rgba(255, 255, 255, 0.12);
   --border-strong: rgba(255, 255, 255, 0.16);
-  
+
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
   --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.5);
-  
+
   /* Transitions */
   --transition-fast: 0.1s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-normal: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
@@ -120,7 +120,12 @@ a:hover {
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   line-height: 1.2;
 }
@@ -186,12 +191,18 @@ pre code {
 
 /* Animations */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideIn {
@@ -493,7 +504,7 @@ pre code {
   .hide-mobile {
     display: none !important;
   }
-  
+
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;

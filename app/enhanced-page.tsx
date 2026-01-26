@@ -104,7 +104,12 @@ type MessageContentPart =
   | { type: 'text'; content: string }
   | { type: 'link'; url: string }
   | { type: 'emoji'; id: string; name: string; animated: boolean }
-  | { type: 'mention'; mentionType: 'user' | 'role' | 'channel' | 'everyone'; id: string; label: string };
+  | {
+      type: 'mention';
+      mentionType: 'user' | 'role' | 'channel' | 'everyone';
+      id: string;
+      label: string;
+    };
 
 type FormattingContext = {
   users?: Record<string, DiscordUser>;
@@ -148,7 +153,7 @@ function formatDate(timestamp: string) {
   try {
     return new Intl.DateTimeFormat('pt-BR', {
       dateStyle: 'short',
-      timeStyle: 'short'
+      timeStyle: 'short',
     }).format(new Date(timestamp));
   } catch (error) {
     return timestamp;
@@ -205,13 +210,13 @@ async function authedFetch<T>(
   formData?: FormData
 ): Promise<T> {
   const headers: HeadersInit = {};
-  
+
   const hasBody = Boolean(body) && method !== 'GET' && method !== 'HEAD';
 
   if (!formData) {
     headers['Authorization'] = `Bot ${token}`;
     headers['Accept'] = 'application/json';
-    
+
     if (hasBody) {
       headers['Content-Type'] = 'application/json';
     }
@@ -222,8 +227,8 @@ async function authedFetch<T>(
   const response = await fetch(`${DISCORD_API_BASE}${endpoint}`, {
     method,
     headers,
-    body: formData ? formData : (hasBody ? JSON.stringify(body) : undefined),
-    cache: 'no-store'
+    body: formData ? formData : hasBody ? JSON.stringify(body) : undefined,
+    cache: 'no-store',
   });
 
   if (!response.ok) {
@@ -264,11 +269,13 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md', className 
   const sizeClasses = {
     sm: 'w-4 h-4',
     md: 'w-6 h-6',
-    lg: 'w-8 h-8'
+    lg: 'w-8 h-8',
   };
 
   return (
-    <div className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]} ${className}`}></div>
+    <div
+      className={`animate-spin rounded-full border-2 border-gray-300 border-t-blue-600 ${sizeClasses[size]} ${className}`}
+    ></div>
   );
 };
 
@@ -294,7 +301,11 @@ interface SearchBarProps {
   placeholder?: string;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isLoading = false, placeholder = "Search messages..." }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+  onSearch,
+  isLoading = false,
+  placeholder = 'Search messages...',
+}) => {
   const [query, setQuery] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -326,7 +337,11 @@ interface FileUploadProps {
   accept?: string;
 }
 
-const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, disabled = false, accept = "*/*" }) => {
+const FileUpload: React.FC<FileUploadProps> = ({
+  onFileSelect,
+  disabled = false,
+  accept = '*/*',
+}) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleClick = () => {
@@ -341,12 +356,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, disabled = false,
 
   return (
     <div className="file-upload">
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={disabled}
-        className="upload-button"
-      >
+      <button type="button" onClick={handleClick} disabled={disabled} className="upload-button">
         📎
       </button>
       <input
@@ -410,7 +420,7 @@ export default function EnhancedBotClient() {
 
     async function loadIdentity() {
       if (!authToken) return;
-      
+
       try {
         setIsAuthenticating(true);
         const bot = await authedFetch<BotUser>(authToken, '/users/@me');
@@ -485,12 +495,13 @@ export default function EnhancedBotClient() {
           authToken,
           `/guilds/${selectedGuildId}/channels`
         );
-        const sortedChannels = [...data].sort(
-          (a, b) => (a.position ?? 0) - (b.position ?? 0)
-        );
+        const sortedChannels = [...data].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
         setChannels(sortedChannels);
         const textChannels = sortedChannels.filter((channel) => channel.type === 0);
-        if (!selectedChannelId || !textChannels.some((channel) => channel.id === selectedChannelId)) {
+        if (
+          !selectedChannelId ||
+          !textChannels.some((channel) => channel.id === selectedChannelId)
+        ) {
           setSelectedChannelId(textChannels[0]?.id ?? null);
         }
       } catch (error) {
@@ -558,12 +569,12 @@ export default function EnhancedBotClient() {
         authToken,
         `/channels/${selectedChannelId}/messages?limit=50&before=${oldestMessage.id}`
       );
-      
+
       if (data.length < 50) {
         setHasMoreMessages(false);
       }
-      
-      setMessages(prev => [...data.reverse(), ...prev]);
+
+      setMessages((prev) => [...data.reverse(), ...prev]);
     } catch (error) {
       console.error('Error loading more messages:', error);
     } finally {
@@ -629,24 +640,30 @@ export default function EnhancedBotClient() {
     try {
       setIsUploading(true);
       const formData = new FormData();
-      
+
       if (content.trim()) {
         formData.append('content', content);
       }
-      
+
       files.forEach((file) => {
         formData.append('files', file);
       });
 
-      await authedFetch(authToken, `/channels/${selectedChannelId}/messages`, 'POST', undefined, formData);
-      
+      await authedFetch(
+        authToken,
+        `/channels/${selectedChannelId}/messages`,
+        'POST',
+        undefined,
+        formData
+      );
+
       // Reload messages
       const newMessages = await authedFetch<DiscordMessage[]>(
         authToken,
         `/channels/${selectedChannelId}/messages?limit=50`
       );
       setMessages(newMessages.reverse());
-      
+
       setUploadedFiles([]);
       setMessageInput('');
     } catch (error) {
@@ -672,32 +689,32 @@ export default function EnhancedBotClient() {
         `/channels/${selectedChannelId}/messages/${messageId}/reactions/${encodeURIComponent(emoji)}/@me`,
         'PUT'
       );
-      
+
       // Update local state
-      setMessages(prev => prev.map(msg => {
-        if (msg.id === messageId) {
-          const existingReaction = msg.reactions?.find(r => r.emoji.name === emoji);
-          if (existingReaction) {
-            return {
-              ...msg,
-              reactions: msg.reactions?.map(r => 
-                r.emoji.name === emoji 
-                  ? { ...r, count: r.count + 1, me: true }
-                  : r
-              )
-            };
-          } else {
-            return {
-              ...msg,
-              reactions: [
-                ...(msg.reactions || []),
-                { count: 1, me: true, emoji: { id: null, name: emoji } }
-              ]
-            };
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === messageId) {
+            const existingReaction = msg.reactions?.find((r) => r.emoji.name === emoji);
+            if (existingReaction) {
+              return {
+                ...msg,
+                reactions: msg.reactions?.map((r) =>
+                  r.emoji.name === emoji ? { ...r, count: r.count + 1, me: true } : r
+                ),
+              };
+            } else {
+              return {
+                ...msg,
+                reactions: [
+                  ...(msg.reactions || []),
+                  { count: 1, me: true, emoji: { id: null, name: emoji } },
+                ],
+              };
+            }
           }
-        }
-        return msg;
-      }));
+          return msg;
+        })
+      );
     } catch (error) {
       console.error('Error adding reaction:', error);
     }
@@ -707,7 +724,7 @@ export default function EnhancedBotClient() {
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!tokenInput.trim()) return;
-    
+
     setIsAuthenticating(true);
     setAuthError(null);
 
@@ -717,22 +734,22 @@ export default function EnhancedBotClient() {
       if (!bot.bot) {
         throw new Error('The provided token does not belong to a bot.');
       }
-      
+
       setBotUser(bot);
       setAuthToken(sanitizedToken);
       if (typeof window !== 'undefined') {
         window.localStorage.setItem('discord-bot-token', sanitizedToken);
       }
-      
+
       const [guildData, dmData] = await Promise.all([
         authedFetch<DiscordGuild[]>(sanitizedToken, '/users/@me/guilds'),
-        authedFetch<DiscordChannel[]>(sanitizedToken, '/users/@me/channels')
+        authedFetch<DiscordChannel[]>(sanitizedToken, '/users/@me/channels'),
       ]);
-      
+
       setGuilds(guildData);
       const directMessages = dmData.filter((channel) => channel.type === 1);
       setDmChannels(directMessages);
-      
+
       if (guildData.length > 0) {
         setSelectedGuildId(guildData[0].id);
       } else if (directMessages.length > 0) {
@@ -805,15 +822,27 @@ export default function EnhancedBotClient() {
             <button onClick={() => setShowUserProfile(false)}>×</button>
           </header>
           <div className="profile-content">
-            <img src={userAvatarUrl(selectedUser)} alt={selectedUser.username} className="profile-avatar" />
+            <img
+              src={userAvatarUrl(selectedUser)}
+              alt={selectedUser.username}
+              className="profile-avatar"
+            />
             <h3>{formatUserTag(selectedUser)}</h3>
             <div className="profile-info">
-              <p><strong>ID:</strong> {selectedUser.id}</p>
-              <p><strong>Username:</strong> {selectedUser.username}</p>
+              <p>
+                <strong>ID:</strong> {selectedUser.id}
+              </p>
+              <p>
+                <strong>Username:</strong> {selectedUser.username}
+              </p>
               {selectedUser.global_name && (
-                <p><strong>Display Name:</strong> {selectedUser.global_name}</p>
+                <p>
+                  <strong>Display Name:</strong> {selectedUser.global_name}
+                </p>
               )}
-              <p><strong>Discriminator:</strong> {selectedUser.discriminator}</p>
+              <p>
+                <strong>Discriminator:</strong> {selectedUser.discriminator}
+              </p>
             </div>
           </div>
         </div>
@@ -833,11 +862,19 @@ export default function EnhancedBotClient() {
           </header>
           <div className="settings-content">
             {guildSettings.icon && (
-              <img src={guildIconUrl({ id: selectedGuildId!, name: guildSettings.name, icon: guildSettings.icon })} alt={guildSettings.name} className="guild-icon" />
+              <img
+                src={guildIconUrl({
+                  id: selectedGuildId!,
+                  name: guildSettings.name,
+                  icon: guildSettings.icon,
+                })}
+                alt={guildSettings.name}
+                className="guild-icon"
+              />
             )}
             <h3>{guildSettings.name}</h3>
             {guildSettings.description && <p>{guildSettings.description}</p>}
-            
+
             <div className="settings-grid">
               <div className="setting-item">
                 <strong>Verification Level:</strong> {guildSettings.verification_level}
@@ -852,7 +889,7 @@ export default function EnhancedBotClient() {
                 <strong>Locale:</strong> {guildSettings.preferred_locale}
               </div>
             </div>
-            
+
             {guildSettings.features.length > 0 && (
               <div className="features-list">
                 <strong>Features:</strong>
@@ -883,13 +920,21 @@ export default function EnhancedBotClient() {
             <p className="placeholder">No messages found.</p>
           ) : (
             searchResults.messages.map((message) => (
-              <div key={message.id} className="search-message-item" onClick={() => {
-                // Scroll to message
-                const element = document.getElementById(`message-${message.id}`);
-                element?.scrollIntoView({ behavior: 'smooth' });
-                setSearchResults(null);
-              }}>
-                <img src={userAvatarUrl(message.author)} alt={message.author.username} className="avatar" />
+              <div
+                key={message.id}
+                className="search-message-item"
+                onClick={() => {
+                  // Scroll to message
+                  const element = document.getElementById(`message-${message.id}`);
+                  element?.scrollIntoView({ behavior: 'smooth' });
+                  setSearchResults(null);
+                }}
+              >
+                <img
+                  src={userAvatarUrl(message.author)}
+                  alt={message.author.username}
+                  className="avatar"
+                />
                 <div className="search-message-content">
                   <div className="search-message-header">
                     <strong>{message.author.username}</strong>
@@ -911,18 +956,13 @@ export default function EnhancedBotClient() {
         <img src={userAvatarUrl(message.author)} alt={message.author.username} />
         <div>
           <header>
-            <strong 
-              className="clickable"
-              onClick={() => loadUserProfile(message.author.id)}
-            >
+            <strong className="clickable" onClick={() => loadUserProfile(message.author.id)}>
               {message.author.global_name ?? message.author.username}
             </strong>
             <span>{formatDate(message.timestamp)}</span>
             {message.edited_timestamp && <span className="edited">(edited)</span>}
           </header>
-          <div className="message-content">
-            {message.content}
-          </div>
+          <div className="message-content">{message.content}</div>
           {message.attachments && message.attachments.length > 0 && (
             <div className="message-attachments">
               {message.attachments.map((attachment) => (
@@ -990,31 +1030,37 @@ export default function EnhancedBotClient() {
       <aside className="channel-sidebar">
         <header>
           <div>
-            <strong>{guilds.find(g => g.id === selectedGuildId)?.name ?? 'Direct Messages'}</strong>
+            <strong>
+              {guilds.find((g) => g.id === selectedGuildId)?.name ?? 'Direct Messages'}
+            </strong>
             <span>{formatUserTag(botUser)}</span>
           </div>
           <div className="header-actions">
             {selectedGuildId && (
-              <button onClick={loadGuildSettings} title="Server Settings">⚙️</button>
+              <button onClick={loadGuildSettings} title="Server Settings">
+                ⚙️
+              </button>
             )}
             <button onClick={logout}>Logout</button>
           </div>
         </header>
-        
+
         <SearchBar onSearch={searchMessages} isLoading={isSearching} />
-        
+
         <section className="channel-list">
           {selectedGuildId ? (
             <div className="channels">
-              {channels.filter(c => c.type === 0).map((channel) => (
-                <button
-                  key={channel.id}
-                  className={`channel-item ${selectedChannelId === channel.id ? 'active' : ''}`}
-                  onClick={() => setSelectedChannelId(channel.id)}
-                >
-                  # {channel.name}
-                </button>
-              ))}
+              {channels
+                .filter((c) => c.type === 0)
+                .map((channel) => (
+                  <button
+                    key={channel.id}
+                    className={`channel-item ${selectedChannelId === channel.id ? 'active' : ''}`}
+                    onClick={() => setSelectedChannelId(channel.id)}
+                  >
+                    # {channel.name}
+                  </button>
+                ))}
             </div>
           ) : (
             <div className="dm-channels">
@@ -1040,17 +1086,12 @@ export default function EnhancedBotClient() {
       <main className="chat-area">
         <header className="chat-header">
           <h2>
-            {selectedChannelId 
-              ? `#${channels.find(c => c.id === selectedChannelId)?.name || 'Unknown'}`
-              : 'Select a channel'
-            }
+            {selectedChannelId
+              ? `#${channels.find((c) => c.id === selectedChannelId)?.name || 'Unknown'}`
+              : 'Select a channel'}
           </h2>
           {hasMoreMessages && (
-            <button 
-              onClick={loadMoreMessages} 
-              disabled={isLoadingMore}
-              className="load-more-btn"
-            >
+            <button onClick={loadMoreMessages} disabled={isLoadingMore} className="load-more-btn">
               {isLoadingMore ? <LoadingSpinner size="sm" /> : 'Load More'}
             </button>
           )}
@@ -1067,9 +1108,7 @@ export default function EnhancedBotClient() {
           ) : messages.length === 0 ? (
             <div className="placeholder">No messages yet. Start the conversation!</div>
           ) : (
-            <div className="message-list">
-              {messages.map(renderMessageWithReactions)}
-            </div>
+            <div className="message-list">{messages.map(renderMessageWithReactions)}</div>
           )}
         </div>
 
@@ -1082,21 +1121,25 @@ export default function EnhancedBotClient() {
                 {uploadedFiles.map((file, index) => (
                   <li key={index}>
                     📎 {file.name} ({(file.size / 1024).toFixed(1)} KB)
-                    <button onClick={() => setUploadedFiles(prev => prev.filter((_, i) => i !== index))}>×</button>
+                    <button
+                      onClick={() => setUploadedFiles((prev) => prev.filter((_, i) => i !== index))}
+                    >
+                      ×
+                    </button>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-          
+
           <form onSubmit={handleSendMessage} className="message-form">
-            <FileUpload 
-              onFileSelect={handleFileSelect} 
+            <FileUpload
+              onFileSelect={handleFileSelect}
               disabled={isUploading || !selectedChannelId}
             />
             <textarea
               value={messageInput}
-              placeholder={selectedChannelId ? "Type a message..." : "Select a channel first"}
+              placeholder={selectedChannelId ? 'Type a message...' : 'Select a channel first'}
               onChange={(e) => setMessageInput(e.target.value)}
               disabled={!selectedChannelId || isUploading}
               rows={1}
@@ -1107,9 +1150,13 @@ export default function EnhancedBotClient() {
                 }
               }}
             />
-            <button 
-              type="submit" 
-              disabled={!selectedChannelId || (!messageInput.trim() && uploadedFiles.length === 0) || isUploading}
+            <button
+              type="submit"
+              disabled={
+                !selectedChannelId ||
+                (!messageInput.trim() && uploadedFiles.length === 0) ||
+                isUploading
+              }
             >
               {isUploading ? <LoadingSpinner size="sm" /> : 'Send'}
             </button>

@@ -71,21 +71,21 @@
 
 <div align="center">
 
-| Feature | Description | Status |
-|---------|-------------|--------|
-| 🔐 **Token Authentication** | Securely connect to your bot | ✅ Ready |
-| 📱 **Responsive Layout** | Desktop / Tablet / Mobile support | ✅ Ready |
-| 🎨 **Modern Dark Theme** | Refined dark visual experience | ✅ Ready |
-| ⚡ **Real-time Updates** | View and send messages instantly | ✅ Ready |
-| 🖼️ **Rich Content Support** | Embeds, attachments and media | ✅ Ready |
-| 🚀 **Next.js Performance** | Optimized build and static export | ✅ Ready |
-| 📁 **File Upload** | Send images, documents and media | 🆕 New |
-| 🔍 **Message Search** | Search through channel messages | 🆕 New |
-| ⚡ **Message Pagination** | Load more historical messages | 🆕 New |
-| 👤 **User Profiles** | View detailed user information | 🆕 New |
-| ⚙️ **Server Settings** | View guild information and settings | 🆕 New |
-| 😊 **Message Reactions** | Add and view emoji reactions | 🆕 New |
-| 📊 **Enhanced Loading** | Better error handling and loading states | 🆕 New |
+| Feature                     | Description                              | Status   |
+| --------------------------- | ---------------------------------------- | -------- |
+| 🔐 **Token Authentication** | Securely connect to your bot             | ✅ Ready |
+| 📱 **Responsive Layout**    | Desktop / Tablet / Mobile support        | ✅ Ready |
+| 🎨 **Modern Dark Theme**    | Refined dark visual experience           | ✅ Ready |
+| ⚡ **Real-time Updates**    | View and send messages instantly         | ✅ Ready |
+| 🖼️ **Rich Content Support** | Embeds, attachments and media            | ✅ Ready |
+| 🚀 **Next.js Performance**  | Optimized build and static export        | ✅ Ready |
+| 📁 **File Upload**          | Send images, documents and media         | 🆕 New   |
+| 🔍 **Message Search**       | Search through channel messages          | 🆕 New   |
+| ⚡ **Message Pagination**   | Load more historical messages            | 🆕 New   |
+| 👤 **User Profiles**        | View detailed user information           | 🆕 New   |
+| ⚙️ **Server Settings**      | View guild information and settings      | 🆕 New   |
+| 😊 **Message Reactions**    | Add and view emoji reactions             | 🆕 New   |
+| 📊 **Enhanced Loading**     | Better error handling and loading states | 🆕 New   |
 
 ---
 
@@ -94,16 +94,19 @@
 <div align="center">
 
 ### 🔑 Authentication Screen
+
 > Clean and straightforward bot token authentication
 
 <img src="./public/screenshot-token.png" alt="Login Screen" width="100%">
 
 ### 💬 Chat Interface
+
 > Navigate guild tree, view embeds and attachments in real-time
 
 <img src="./public/screenshot-chats.png" alt="Chat Interface" width="100%">
 
 ### 📱 Responsive Design
+
 > Adaptive UI with consistent typography and spacing
 
 <img src="https://via.placeholder.com/800x200/0F172A/1E3A8A?text=Mobile+%7C+Tablet+%7C+Desktop" alt="Responsive Design" width="100%">
@@ -156,6 +159,21 @@ npm run build
 npm run export
 ```
 
+### 🎨 Code Formatting & Linting
+
+```bash
+# Format all files with Prettier
+npm run format
+
+# Check formatting without making changes
+npm run format:check
+
+# Run ESLint to check code quality
+npm run lint
+```
+
+> 💡 **Tip**: See [FORMATTING.md](./FORMATTING.md) for detailed formatting guidelines and editor setup.
+
 ---
 
 ## 🚀 Deployment on Render
@@ -199,12 +217,12 @@ NPM_FLAGS=--production=false
 
 ### Deployment Features
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| 🔄 **Auto Deploy** | ✅ Ready | Push to deploy with Git |
-| 🌐 **Custom Domain** | ✅ Ready | Add your own domain |
-| 🔒 **HTTPS** | ✅ Ready | SSL certificate included |
-| 📊 **Analytics** | ✅ Ready | Built-in performance monitoring |
+| Feature                      | Status   | Description                     |
+| ---------------------------- | -------- | ------------------------------- |
+| 🔄 **Auto Deploy**           | ✅ Ready | Push to deploy with Git         |
+| 🌐 **Custom Domain**         | ✅ Ready | Add your own domain             |
+| 🔒 **HTTPS**                 | ✅ Ready | SSL certificate included        |
+| 📊 **Analytics**             | ✅ Ready | Built-in performance monitoring |
 | 🔧 **Environment Variables** | ✅ Ready | Secure configuration management |
 
 ---
@@ -242,12 +260,12 @@ graph TD
 
 ### 🔒 Security Best Practices
 
-| ✅ Do | ❌ Don't |
-|-------|----------|
-| Store tokens locally only | Share tokens publicly |
-| Use environment variables | Commit tokens to git |
+| ✅ Do                     | ❌ Don't                       |
+| ------------------------- | ------------------------------ |
+| Store tokens locally only | Share tokens publicly          |
+| Use environment variables | Commit tokens to git           |
 | Regenerate if compromised | Use tokens in client-side code |
-| Follow Discord ToS | Abuse rate limits |
+| Follow Discord ToS        | Abuse rate limits              |
 
 </div>
 
@@ -325,18 +343,18 @@ botclienty/
 ```css
 /* Dark Blue Theme */
 :root {
-  --primary-bg: #0F172A;      /* Main background */
-  --secondary-bg: #1E293B;    /* Cards/panels */
-  --accent-blue: #1E3A8A;     /* Primary accent */
-  --accent-light: #3B82F6;    /* Light blue accent */
-  --accent-dark: #1E40AF;     /* Dark blue accent */
-  --text-primary: #F8FAFC;    /* Primary text */
-  --text-secondary: #CBD5E1;  /* Secondary text */
-  --hover-bg: #334155;        /* Hover states */
-  --border-color: #475569;    /* Borders */
-  --success-color: #10B981;   /* Success states */
-  --error-color: #EF4444;     /* Error states */
-  --warning-color: #F59E0B;   /* Warning states */
+  --primary-bg: #0f172a; /* Main background */
+  --secondary-bg: #1e293b; /* Cards/panels */
+  --accent-blue: #1e3a8a; /* Primary accent */
+  --accent-light: #3b82f6; /* Light blue accent */
+  --accent-dark: #1e40af; /* Dark blue accent */
+  --text-primary: #f8fafc; /* Primary text */
+  --text-secondary: #cbd5e1; /* Secondary text */
+  --hover-bg: #334155; /* Hover states */
+  --border-color: #475569; /* Borders */
+  --success-color: #10b981; /* Success states */
+  --error-color: #ef4444; /* Error states */
+  --warning-color: #f59e0b; /* Warning states */
 }
 ```
 
@@ -344,17 +362,23 @@ botclienty/
 
 ```css
 /* Inter Font Family */
-font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+font-family:
+  'Inter',
+  system-ui,
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  sans-serif;
 
 /* Type Scale */
---text-xs: 0.75rem;    /* 12px - Small labels */
---text-sm: 0.875rem;   /* 14px - Body small */
---text-base: 1rem;     /* 16px - Body */
---text-lg: 1.125rem;   /* 18px - Large body */
---text-xl: 1.25rem;    /* 20px - Small headings */
---text-2xl: 1.5rem;    /* 24px - Medium headings */
---text-3xl: 1.875rem;  /* 30px - Large headings */
---text-4xl: 2.25rem;   /* 36px - Extra large */
+--text-xs: 0.75rem; /* 12px - Small labels */
+--text-sm: 0.875rem; /* 14px - Body small */
+--text-base: 1rem; /* 16px - Body */
+--text-lg: 1.125rem; /* 18px - Large body */
+--text-xl: 1.25rem; /* 20px - Small headings */
+--text-2xl: 1.5rem; /* 24px - Medium headings */
+--text-3xl: 1.875rem; /* 30px - Large headings */
+--text-4xl: 2.25rem; /* 36px - Extra large */
 ```
 
 ---
@@ -363,13 +387,13 @@ font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 
 
 <div align="center">
 
-| Security Feature | Implementation |
-|------------------|----------------|
+| Security Feature           | Implementation                                |
+| -------------------------- | --------------------------------------------- |
 | 🔐 **Local Token Storage** | Tokens stored locally, no third-party sharing |
-| 🌐 **HTTPS Only** | All API calls use secure HTTPS connections |
-| 🚫 **No Data Collection** | No external data collection or analytics |
-| 💾 **Client-side Only** | All data remains on your device |
-| 🔄 **Token Rotation** | Support for easy token regeneration |
+| 🌐 **HTTPS Only**          | All API calls use secure HTTPS connections    |
+| 🚫 **No Data Collection**  | No external data collection or analytics      |
+| 💾 **Client-side Only**    | All data remains on your device               |
+| 🔄 **Token Rotation**      | Support for easy token regeneration           |
 
 </div>
 
@@ -457,8 +481,9 @@ git push origin feature/your-feature-name
 - 📝 **Clear descriptions** - Explain what and why
 - 🧪 **Test your changes** - Ensure everything works
 - 📚 **Update documentation** - Keep docs current
-- 🎨 **Follow code style** - Maintain consistency
+- 🎨 **Follow code style** - Run `npm run format` before committing
 - 🔍 **Review process** - Be open to feedback
+- ✅ **Quality checks** - Ensure `npm run lint` and `npm run format:check` pass
 
 ---
 

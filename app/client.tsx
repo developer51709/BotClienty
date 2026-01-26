@@ -120,25 +120,28 @@ function formatDate(timestamp: string) {
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-  
+
   if (days === 0) {
     return new Intl.DateTimeFormat('en-US', {
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     }).format(date);
   } else if (days === 1) {
-    return 'Yesterday ' + new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    }).format(date);
+    return (
+      'Yesterday ' +
+      new Intl.DateTimeFormat('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      }).format(date)
+    );
   } else if (days < 7) {
     return new Intl.DateTimeFormat('en-US', {
       weekday: 'short',
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     }).format(date);
   } else {
     return new Intl.DateTimeFormat('en-US', {
@@ -146,7 +149,7 @@ function formatDate(timestamp: string) {
       day: 'numeric',
       hour: 'numeric',
       minute: '2-digit',
-      hour12: true
+      hour12: true,
     }).format(date);
   }
 }
@@ -173,10 +176,10 @@ function userAvatarUrl(user: User) {
 
 function getChannelTypeIcon(type: number): string {
   const icons: Record<number, string> = {
-    0: '#',   // Text
-    2: '🔊',  // Voice
-    4: '📁',  // Category
-    5: '📢',  // Announcement
+    0: '#', // Text
+    2: '🔊', // Voice
+    4: '📁', // Category
+    5: '📢', // Announcement
     13: '🎙️', // Stage
     15: '🧵', // Forum
   };
@@ -197,7 +200,7 @@ async function authedFetch<T>(token: string, endpoint: string, options?: Request
     ...options,
     headers: {
       ...options?.headers,
-      'Authorization': `Bot ${token}`,
+      Authorization: `Bot ${token}`,
       'Content-Type': 'application/json',
     },
     cache: 'no-store',
@@ -220,13 +223,15 @@ async function authedFetch<T>(token: string, endpoint: string, options?: Request
 const Button: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: 'primary' | 'secondary' | 'danger' }
 > = ({ children, className = '', variant = 'secondary', ...props }) => {
-  const baseClasses = "px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50";
+  const baseClasses =
+    'px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50';
   const variantClasses = {
-    primary: "bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg disabled:bg-blue-600/50",
-    secondary: "bg-gray-700/80 hover:bg-gray-600/80 text-gray-100 border border-gray-600/50",
-    danger: "bg-red-600/90 hover:bg-red-700 text-white border border-red-500/50",
+    primary:
+      'bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg disabled:bg-blue-600/50',
+    secondary: 'bg-gray-700/80 hover:bg-gray-600/80 text-gray-100 border border-gray-600/50',
+    danger: 'bg-red-600/90 hover:bg-red-700 text-white border border-red-500/50',
   };
-  
+
   return (
     <button className={`${baseClasses} ${variantClasses[variant]} ${className}`} {...props}>
       {children}
@@ -234,14 +239,20 @@ const Button: React.FC<
   );
 };
 
-const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({ className = '', ...props }) => (
+const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
+  className = '',
+  ...props
+}) => (
   <input
     className={`bg-gray-800/80 border border-gray-600/50 rounded-lg px-4 py-2.5 text-sm text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all ${className}`}
     {...props}
   />
 );
 
-const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({ className = '', ...props }) => (
+const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({
+  className = '',
+  ...props
+}) => (
   <textarea
     className={`bg-gray-800/80 border border-gray-600/50 rounded-lg px-4 py-2.5 text-sm text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none min-h-[60px] transition-all ${className}`}
     {...props}
@@ -253,7 +264,9 @@ const Card: React.FC<{ children: React.ReactNode; className?: string; interactiv
   className = '',
   interactive = false,
 }) => (
-  <div className={`bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 shadow-lg ${interactive ? 'hover:bg-gray-800/80 hover:border-gray-600/50 transition-all duration-200' : ''} ${className}`}>
+  <div
+    className={`bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 shadow-lg ${interactive ? 'hover:bg-gray-800/80 hover:border-gray-600/50 transition-all duration-200' : ''} ${className}`}
+  >
     {children}
   </div>
 );
@@ -262,9 +275,12 @@ const Card: React.FC<{ children: React.ReactNode; className?: string; interactiv
 
 const MessageEmbed: React.FC<{ embed: Embed }> = ({ embed }) => {
   const borderColor = embed.color ? `rgb(${hexToRgb(embed.color)})` : 'rgb(79, 84, 92)';
-  
+
   return (
-    <div className="bg-gray-800/60 border-l-4 rounded-lg p-4 my-2 max-w-lg" style={{ borderLeftColor: borderColor }}>
+    <div
+      className="bg-gray-800/60 border-l-4 rounded-lg p-4 my-2 max-w-lg"
+      style={{ borderLeftColor: borderColor }}
+    >
       {embed.author && (
         <div className="flex items-center gap-2 mb-2">
           {embed.author.icon_url && (
@@ -273,19 +289,27 @@ const MessageEmbed: React.FC<{ embed: Embed }> = ({ embed }) => {
           <span className="text-sm font-medium text-gray-200">{embed.author.name}</span>
         </div>
       )}
-      
+
       {embed.title && (
         <div className="font-semibold text-blue-400 mb-2 hover:underline cursor-pointer">
-          {embed.url ? <a href={embed.url} target="_blank" rel="noopener noreferrer">{embed.title}</a> : embed.title}
+          {embed.url ? (
+            <a href={embed.url} target="_blank" rel="noopener noreferrer">
+              {embed.title}
+            </a>
+          ) : (
+            embed.title
+          )}
         </div>
       )}
-      
+
       {embed.description && (
         <div className="text-sm text-gray-300 whitespace-pre-wrap mb-3">{embed.description}</div>
       )}
-      
+
       {embed.fields && embed.fields.length > 0 && (
-        <div className={`grid gap-2 ${embed.fields.some(f => f.inline) ? 'grid-cols-2' : 'grid-cols-1'}`}>
+        <div
+          className={`grid gap-2 ${embed.fields.some((f) => f.inline) ? 'grid-cols-2' : 'grid-cols-1'}`}
+        >
           {embed.fields.map((field, i) => (
             <div key={i} className={field.inline ? 'col-span-1' : 'col-span-2'}>
               <div className="text-sm font-semibold text-gray-200 mb-1">{field.name}</div>
@@ -294,15 +318,23 @@ const MessageEmbed: React.FC<{ embed: Embed }> = ({ embed }) => {
           ))}
         </div>
       )}
-      
+
       {embed.image && (
-        <img src={embed.image.url} alt="" className="rounded-lg mt-3 max-w-full max-h-80 object-contain" />
+        <img
+          src={embed.image.url}
+          alt=""
+          className="rounded-lg mt-3 max-w-full max-h-80 object-contain"
+        />
       )}
-      
+
       {embed.thumbnail && (
-        <img src={embed.thumbnail.url} alt="" className="rounded-lg float-right ml-4 max-w-20 max-h-20 object-contain" />
+        <img
+          src={embed.thumbnail.url}
+          alt=""
+          className="rounded-lg float-right ml-4 max-w-20 max-h-20 object-contain"
+        />
       )}
-      
+
       {embed.footer && (
         <div className="flex items-center gap-2 mt-3 pt-2 border-t border-gray-700/50">
           {embed.footer.icon_url && (
@@ -318,19 +350,19 @@ const MessageEmbed: React.FC<{ embed: Embed }> = ({ embed }) => {
 const MessageAttachment: React.FC<{ attachment: Attachment }> = ({ attachment }) => {
   const isImage = attachment.content_type?.startsWith('image/');
   const isVideo = attachment.content_type?.startsWith('video/');
-  
+
   if (isImage) {
     return (
       <a href={attachment.url} target="_blank" rel="noopener noreferrer" className="block my-2">
-        <img 
-          src={attachment.url} 
-          alt={attachment.filename} 
-          className="rounded-lg max-w-md max-h-96 object-contain cursor-pointer hover:opacity-90 transition-opacity" 
+        <img
+          src={attachment.url}
+          alt={attachment.filename}
+          className="rounded-lg max-w-md max-h-96 object-contain cursor-pointer hover:opacity-90 transition-opacity"
         />
       </a>
     );
   }
-  
+
   if (isVideo) {
     return (
       <video controls className="rounded-lg max-w-md max-h-96 my-2">
@@ -338,12 +370,12 @@ const MessageAttachment: React.FC<{ attachment: Attachment }> = ({ attachment })
       </video>
     );
   }
-  
+
   return (
-    <a 
-      href={attachment.url} 
-      target="_blank" 
-      rel="noopener noreferrer" 
+    <a
+      href={attachment.url}
+      target="_blank"
+      rel="noopener noreferrer"
       className="inline-flex items-center gap-2 bg-gray-700/60 hover:bg-gray-600/60 px-4 py-2 rounded-lg my-2 transition-colors"
     >
       <span className="text-2xl">📎</span>
@@ -366,9 +398,9 @@ const MessageComponent: React.FC<{
   const [editContent, setEditContent] = useState(message.content);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  
+
   const isCurrentUser = message.author.id === currentUser?.id;
-  
+
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -390,7 +422,7 @@ const MessageComponent: React.FC<{
     }
     setShowMenu(false);
   };
-  
+
   return (
     <div
       id={`message-${message.id}`}
@@ -402,7 +434,7 @@ const MessageComponent: React.FC<{
         onClick={() => onUserClick?.(message.author)}
         className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 mt-0.5"
       />
-      
+
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2 mb-1">
           <button
@@ -414,14 +446,14 @@ const MessageComponent: React.FC<{
             {formatUser(message.author)}
           </button>
           {message.author.bot && (
-            <span className="text-xs bg-blue-600/80 text-white px-1.5 py-0.5 rounded font-medium">BOT</span>
+            <span className="text-xs bg-blue-600/80 text-white px-1.5 py-0.5 rounded font-medium">
+              BOT
+            </span>
           )}
           <span className="text-xs text-gray-500">{formatDate(message.timestamp)}</span>
-          {message.edited_timestamp && (
-            <span className="text-xs text-gray-500">(edited)</span>
-          )}
+          {message.edited_timestamp && <span className="text-xs text-gray-500">(edited)</span>}
         </div>
-        
+
         <div className="relative">
           {isEditing ? (
             <div className="space-y-2">
@@ -444,9 +476,11 @@ const MessageComponent: React.FC<{
           ) : (
             <>
               {message.content && (
-                <p className="whitespace-pre-wrap break-words text-gray-200 leading-relaxed">{message.content}</p>
+                <p className="whitespace-pre-wrap break-words text-gray-200 leading-relaxed">
+                  {message.content}
+                </p>
               )}
-              
+
               {message.embeds && message.embeds.length > 0 && (
                 <div className="space-y-2">
                   {message.embeds.map((embed, i) => (
@@ -454,17 +488,17 @@ const MessageComponent: React.FC<{
                   ))}
                 </div>
               )}
-              
+
               {message.attachments && message.attachments.length > 0 && (
                 <div className="space-y-2">
-                  {message.attachments.map(attachment => (
+                  {message.attachments.map((attachment) => (
                     <MessageAttachment key={attachment.id} attachment={attachment} />
                   ))}
                 </div>
               )}
             </>
           )}
-          
+
           <div className="absolute -top-4 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               onClick={() => setShowMenu(!showMenu)}
@@ -473,13 +507,19 @@ const MessageComponent: React.FC<{
               ⋮
             </button>
           </div>
-          
+
           {showMenu && (
-            <div ref={menuRef} className="absolute right-0 top-8 w-40 bg-gray-800 border border-gray-600/50 rounded-lg shadow-xl z-20 overflow-hidden">
+            <div
+              ref={menuRef}
+              className="absolute right-0 top-8 w-40 bg-gray-800 border border-gray-600/50 rounded-lg shadow-xl z-20 overflow-hidden"
+            >
               {isCurrentUser && (
                 <>
                   <button
-                    onClick={() => { setIsEditing(true); setShowMenu(false); }}
+                    onClick={() => {
+                      setIsEditing(true);
+                      setShowMenu(false);
+                    }}
                     className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center gap-2"
                   >
                     <span>✏️</span> Edit Message
@@ -493,7 +533,10 @@ const MessageComponent: React.FC<{
                 </>
               )}
               <button
-                onClick={() => { navigator.clipboard.writeText(message.id); setShowMenu(false); }}
+                onClick={() => {
+                  navigator.clipboard.writeText(message.id);
+                  setShowMenu(false);
+                }}
                 className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center gap-2"
               >
                 <span>📋</span> Copy ID
@@ -513,7 +556,7 @@ export default function DiscordClient() {
   const [tokenInput, setTokenInput] = useState('');
   const [authToken, setAuthToken] = useState<string | null>(null);
   const [botUser, setBotUser] = useState<User | null>(null);
-  
+
   // Data state
   const [guilds, setGuilds] = useState<Guild[]>([]);
   const [selectedGuildId, setSelectedGuildId] = useState<string | null>(null);
@@ -521,11 +564,11 @@ export default function DiscordClient() {
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
-  
+
   // Messages
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState('');
-  
+
   // UI state
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -533,7 +576,7 @@ export default function DiscordClient() {
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [showChannelInfo, setShowChannelInfo] = useState(false);
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom when new messages arrive
@@ -580,7 +623,7 @@ export default function DiscordClient() {
   // API Calls
   const authenticate = async () => {
     if (!authToken) return;
-    
+
     setIsAuthenticating(true);
     try {
       const user = await authedFetch<User>(authToken, '/users/@me');
@@ -617,15 +660,15 @@ export default function DiscordClient() {
     try {
       const [channelData, roleData] = await Promise.all([
         authedFetch<Channel[]>(authToken, `/guilds/${selectedGuildId}/channels`),
-        authedFetch<Role[]>(authToken, `/guilds/${selectedGuildId}/roles`)
+        authedFetch<Role[]>(authToken, `/guilds/${selectedGuildId}/roles`),
       ]);
-      
+
       const sortedChannels = [...channelData].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
       setChannels(sortedChannels);
       setRoles(roleData);
-      
-      const textChannels = sortedChannels.filter(c => c.type === 0);
-      if (!selectedChannelId || !textChannels.some(c => c.id === selectedChannelId)) {
+
+      const textChannels = sortedChannels.filter((c) => c.type === 0);
+      if (!selectedChannelId || !textChannels.some((c) => c.id === selectedChannelId)) {
         setSelectedChannelId(textChannels[0]?.id || null);
       }
     } catch (error) {
@@ -642,7 +685,10 @@ export default function DiscordClient() {
     }
     setIsLoading(true);
     try {
-      const data = await authedFetch<Message[]>(authToken, `/channels/${selectedChannelId}/messages?limit=50`);
+      const data = await authedFetch<Message[]>(
+        authToken,
+        `/channels/${selectedChannelId}/messages?limit=50`
+      );
       setMessages(data.reverse());
     } catch (error) {
       console.error('Failed to load messages:', error);
@@ -655,13 +701,13 @@ export default function DiscordClient() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!tokenInput.trim()) return;
-    
+
     const token = tokenInput.trim();
     try {
       setIsAuthenticating(true);
       const user = await authedFetch<User>(token, '/users/@me');
       if (!user.bot) throw new Error('Not a bot token');
-      
+
       setBotUser(user);
       setAuthToken(token);
       localStorage.setItem('discord-bot-token', token);
@@ -690,7 +736,7 @@ export default function DiscordClient() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authToken || !selectedChannelId || !messageInput.trim()) return;
-    
+
     try {
       await authedFetch(authToken, `/channels/${selectedChannelId}/messages`, {
         method: 'POST',
@@ -706,14 +752,10 @@ export default function DiscordClient() {
   const handleEditMessage = async (message: Message) => {
     if (!authToken || !selectedChannelId) return;
     try {
-      await authedFetch(
-        authToken,
-        `/channels/${selectedChannelId}/messages/${message.id}`,
-        {
-          method: 'PATCH',
-          body: JSON.stringify({ content: message.content }),
-        }
-      );
+      await authedFetch(authToken, `/channels/${selectedChannelId}/messages/${message.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ content: message.content }),
+      });
       loadMessages();
     } catch (error) {
       console.error('Failed to edit message:', error);
@@ -724,7 +766,9 @@ export default function DiscordClient() {
     if (!authToken || !selectedChannelId) return;
     authedFetch(authToken, `/channels/${selectedChannelId}/messages/${messageId}`, {
       method: 'DELETE',
-    }).then(loadMessages).catch(console.error);
+    })
+      .then(loadMessages)
+      .catch(console.error);
   };
 
   const handleUserClick = (user: User) => {
@@ -744,7 +788,7 @@ export default function DiscordClient() {
           </div>
           <h1 className="text-3xl font-bold text-center mb-2 text-gray-100">BotClienty</h1>
           <p className="text-gray-400 text-center mb-8">Discord Bot Web Client</p>
-          
+
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-gray-200">Bot Token</label>
@@ -756,7 +800,7 @@ export default function DiscordClient() {
                 autoFocus
               />
             </div>
-            
+
             {authError && (
               <div className="bg-red-500/10 border border-red-500/50 p-3 rounded-lg">
                 <p className="text-red-400 text-sm flex items-center gap-2">
@@ -764,7 +808,7 @@ export default function DiscordClient() {
                 </p>
               </div>
             )}
-            
+
             <Button type="submit" variant="primary" className="w-full" disabled={isAuthenticating}>
               {isAuthenticating ? (
                 <span className="flex items-center justify-center gap-2">
@@ -776,7 +820,7 @@ export default function DiscordClient() {
               )}
             </Button>
           </form>
-          
+
           <div className="mt-8 pt-6 border-t border-gray-700/50">
             <h3 className="font-semibold mb-3 text-gray-200">Features</h3>
             <div className="space-y-2 text-sm text-gray-400">
@@ -801,13 +845,13 @@ export default function DiscordClient() {
       </div>
     );
   }
-  
-  const selectedGuild = guilds.find(g => g.id === selectedGuildId);
-  const selectedChannel = channels.find(c => c.id === selectedChannelId);
-  const textChannels = channels.filter(c => c.type === 0);
-  const voiceChannels = channels.filter(c => c.type === 2);
-  const categories = channels.filter(c => c.type === 4);
-  
+
+  const selectedGuild = guilds.find((g) => g.id === selectedGuildId);
+  const selectedChannel = channels.find((c) => c.id === selectedChannelId);
+  const textChannels = channels.filter((c) => c.type === 0);
+  const voiceChannels = channels.filter((c) => c.type === 2);
+  const categories = channels.filter((c) => c.type === 4);
+
   return (
     <div className="flex h-screen bg-gray-900 text-gray-100">
       {/* Server Sidebar */}
@@ -816,7 +860,7 @@ export default function DiscordClient() {
           🏠
         </div>
         <div className="w-10 h-0.5 bg-gray-700 rounded-full my-1" />
-        {guilds.map(guild => (
+        {guilds.map((guild) => (
           <button
             key={guild.id}
             onClick={() => {
@@ -830,7 +874,11 @@ export default function DiscordClient() {
             title={guild.name}
           >
             {guild.icon ? (
-              <img src={guildIconUrl(guild)} alt={guild.name} className="w-full h-full object-cover" />
+              <img
+                src={guildIconUrl(guild)}
+                alt={guild.name}
+                className="w-full h-full object-cover"
+              />
             ) : (
               <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
                 <span className="font-bold text-sm">{guild.name.charAt(0)}</span>
@@ -839,16 +887,18 @@ export default function DiscordClient() {
           </button>
         ))}
       </nav>
-      
+
       {/* Channel Sidebar */}
       <aside className="w-60 bg-gray-800/60 border-r border-gray-700/50 flex flex-col">
         <header className="p-4 border-b border-gray-700/50 bg-gray-800/40">
-          <h2 className="font-bold text-base truncate text-gray-100">{selectedGuild?.name || 'BotClienty'}</h2>
+          <h2 className="font-bold text-base truncate text-gray-100">
+            {selectedGuild?.name || 'BotClienty'}
+          </h2>
           {selectedGuild?.description && (
             <p className="text-xs text-gray-400 truncate mt-1">{selectedGuild.description}</p>
           )}
         </header>
-        
+
         <div className="flex-1 overflow-y-auto p-2 space-y-1">
           {textChannels.length > 0 && (
             <div className="mb-4">
@@ -856,12 +906,14 @@ export default function DiscordClient() {
                 <span>Text Channels</span>
                 <span className="text-gray-500">({textChannels.length})</span>
               </div>
-              {textChannels.map(channel => (
+              {textChannels.map((channel) => (
                 <button
                   key={channel.id}
                   onClick={() => setSelectedChannelId(channel.id)}
                   className={`w-full text-left px-2 py-1.5 rounded hover:bg-gray-700/50 transition-colors flex items-center gap-2 group ${
-                    selectedChannelId === channel.id ? 'bg-gray-700/70 text-gray-100' : 'text-gray-400'
+                    selectedChannelId === channel.id
+                      ? 'bg-gray-700/70 text-gray-100'
+                      : 'text-gray-400'
                   }`}
                 >
                   <span className="text-sm">{getChannelTypeIcon(channel.type)}</span>
@@ -871,14 +923,14 @@ export default function DiscordClient() {
               ))}
             </div>
           )}
-          
+
           {voiceChannels.length > 0 && (
             <div className="mb-4">
               <div className="text-xs font-semibold text-gray-400 uppercase px-2 mb-1 flex items-center gap-1">
                 <span>Voice Channels</span>
                 <span className="text-gray-500">({voiceChannels.length})</span>
               </div>
-              {voiceChannels.map(channel => (
+              {voiceChannels.map((channel) => (
                 <div
                   key={channel.id}
                   className="px-2 py-1.5 rounded text-gray-400 flex items-center gap-2 text-sm"
@@ -889,12 +941,12 @@ export default function DiscordClient() {
               ))}
             </div>
           )}
-          
-          {channels.filter(c => c.type === 0).length === 0 && !isLoading && (
+
+          {channels.filter((c) => c.type === 0).length === 0 && !isLoading && (
             <p className="text-gray-500 text-sm px-2 py-4">No channels available</p>
           )}
         </div>
-        
+
         <div className="p-3 border-t border-gray-700/50 bg-gray-800/40">
           <div className="flex items-center gap-3 mb-3">
             <img
@@ -903,7 +955,9 @@ export default function DiscordClient() {
               className="w-8 h-8 rounded-full"
             />
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm text-gray-100 truncate">{botUser.global_name || botUser.username}</p>
+              <p className="font-medium text-sm text-gray-100 truncate">
+                {botUser.global_name || botUser.username}
+              </p>
               <p className="text-xs text-gray-400 truncate">#{botUser.discriminator}</p>
             </div>
           </div>
@@ -912,16 +966,22 @@ export default function DiscordClient() {
           </Button>
         </div>
       </aside>
-      
+
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col bg-gray-900/50">
         {/* Chat Header */}
         <header className="px-4 py-3 border-b border-gray-700/50 bg-gray-800/40 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-gray-400">{selectedChannel ? getChannelTypeIcon(selectedChannel.type) : '#'}</span>
-            <h1 className="text-lg font-semibold text-gray-100">{selectedChannel?.name || 'Select a channel'}</h1>
+            <span className="text-gray-400">
+              {selectedChannel ? getChannelTypeIcon(selectedChannel.type) : '#'}
+            </span>
+            <h1 className="text-lg font-semibold text-gray-100">
+              {selectedChannel?.name || 'Select a channel'}
+            </h1>
             {selectedChannel?.nsfw && (
-              <span className="text-xs bg-red-600/80 text-white px-2 py-0.5 rounded font-medium">NSFW</span>
+              <span className="text-xs bg-red-600/80 text-white px-2 py-0.5 rounded font-medium">
+                NSFW
+              </span>
             )}
           </div>
           {selectedChannel && (
@@ -931,18 +991,23 @@ export default function DiscordClient() {
               title="Channel Info"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </button>
           )}
         </header>
-        
+
         {selectedChannel?.topic && (
           <div className="px-4 py-2 bg-gray-800/30 border-b border-gray-700/50">
             <p className="text-sm text-gray-400">{selectedChannel.topic}</p>
           </div>
         )}
-        
+
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
@@ -964,7 +1029,7 @@ export default function DiscordClient() {
             </div>
           ) : (
             <div className="py-4">
-              {messages.map(message => (
+              {messages.map((message) => (
                 <MessageComponent
                   key={message.id}
                   message={message}
@@ -978,14 +1043,18 @@ export default function DiscordClient() {
             </div>
           )}
         </div>
-        
+
         {/* Message Composer */}
         <footer className="p-4 border-t border-gray-700/50 bg-gray-800/40">
           <form onSubmit={handleSendMessage} className="flex gap-2">
             <TextArea
               value={messageInput}
               onChange={(e) => setMessageInput(e.target.value)}
-              placeholder={selectedChannelId ? `Message #${selectedChannel?.name || 'channel'}` : "Select a channel first"}
+              placeholder={
+                selectedChannelId
+                  ? `Message #${selectedChannel?.name || 'channel'}`
+                  : 'Select a channel first'
+              }
               onKeyDown={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
@@ -996,7 +1065,7 @@ export default function DiscordClient() {
               disabled={!selectedChannelId}
               rows={1}
             />
-            
+
             <Button
               type="submit"
               variant="primary"
@@ -1008,7 +1077,7 @@ export default function DiscordClient() {
           </form>
         </footer>
       </main>
-      
+
       {/* Right Sidebar - Channel Info */}
       {showChannelInfo && selectedChannel && (
         <aside className="w-64 bg-gray-800/60 border-l border-gray-700/50 p-4 overflow-y-auto">
@@ -1021,7 +1090,7 @@ export default function DiscordClient() {
               ✕
             </button>
           </div>
-          
+
           <div className="space-y-4">
             <div className="bg-gray-700/40 rounded-lg p-3">
               <div className="text-xs text-gray-400 mb-1">Name</div>
@@ -1030,7 +1099,7 @@ export default function DiscordClient() {
                 {selectedChannel.name}
               </div>
             </div>
-            
+
             <div className="bg-gray-700/40 rounded-lg p-3">
               <div className="text-xs text-gray-400 mb-1">Channel ID</div>
               <div className="text-xs font-mono text-gray-300 flex items-center gap-2">
@@ -1044,66 +1113,79 @@ export default function DiscordClient() {
                 </button>
               </div>
             </div>
-            
+
             {selectedChannel.topic && (
               <div className="bg-gray-700/40 rounded-lg p-3">
                 <div className="text-xs text-gray-400 mb-1">Topic</div>
                 <div className="text-sm text-gray-300">{selectedChannel.topic}</div>
               </div>
             )}
-            
-            {selectedChannel.rate_limit_per_user !== undefined && selectedChannel.rate_limit_per_user > 0 && (
-              <div className="bg-gray-700/40 rounded-lg p-3">
-                <div className="text-xs text-gray-400 mb-1">Slowmode</div>
-                <div className="text-sm text-gray-300">{selectedChannel.rate_limit_per_user}s</div>
-              </div>
-            )}
-            
+
+            {selectedChannel.rate_limit_per_user !== undefined &&
+              selectedChannel.rate_limit_per_user > 0 && (
+                <div className="bg-gray-700/40 rounded-lg p-3">
+                  <div className="text-xs text-gray-400 mb-1">Slowmode</div>
+                  <div className="text-sm text-gray-300">
+                    {selectedChannel.rate_limit_per_user}s
+                  </div>
+                </div>
+              )}
+
             <div className="bg-gray-700/40 rounded-lg p-3">
               <div className="text-xs text-gray-400 mb-1">Messages</div>
               <div className="text-sm font-medium text-gray-200">{messages.length}</div>
             </div>
-            
+
             {roles.length > 0 && (
               <div>
                 <div className="text-xs text-gray-400 mb-2">Server Roles ({roles.length})</div>
                 <div className="space-y-1 max-h-60 overflow-y-auto">
-                  {roles.sort((a, b) => b.position - a.position).map(role => (
-                    <div
-                      key={role.id}
-                      className="bg-gray-700/40 rounded px-2 py-1.5 text-xs flex items-center gap-2"
-                    >
-                      {role.color !== 0 && (
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: `#${role.color.toString(16).padStart(6, '0')}` }}
-                        />
-                      )}
-                      <span className="text-gray-300 truncate">{role.name}</span>
-                    </div>
-                  ))}
+                  {roles
+                    .sort((a, b) => b.position - a.position)
+                    .map((role) => (
+                      <div
+                        key={role.id}
+                        className="bg-gray-700/40 rounded px-2 py-1.5 text-xs flex items-center gap-2"
+                      >
+                        {role.color !== 0 && (
+                          <div
+                            className="w-3 h-3 rounded-full"
+                            style={{
+                              backgroundColor: `#${role.color.toString(16).padStart(6, '0')}`,
+                            }}
+                          />
+                        )}
+                        <span className="text-gray-300 truncate">{role.name}</span>
+                      </div>
+                    ))}
                 </div>
               </div>
             )}
           </div>
         </aside>
       )}
-      
+
       {/* User Profile Modal */}
       {showUserProfile && selectedUser && (
         <div
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
           onClick={() => setShowUserProfile(false)}
         >
-          <div className="bg-gray-800 border border-gray-700 rounded-2xl max-w-lg w-full shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="bg-gray-800 border border-gray-700 rounded-2xl max-w-lg w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold text-gray-100">User Profile</h2>
-                <button onClick={() => setShowUserProfile(false)} className="text-gray-400 hover:text-gray-200 text-2xl">
+                <button
+                  onClick={() => setShowUserProfile(false)}
+                  className="text-gray-400 hover:text-gray-200 text-2xl"
+                >
                   ✕
                 </button>
               </div>
-              
+
               <div className="flex gap-4 mb-6">
                 <img
                   src={userAvatarUrl(selectedUser)}
@@ -1120,7 +1202,7 @@ export default function DiscordClient() {
                   )}
                 </div>
               </div>
-              
+
               <div className="space-y-3">
                 <div className="bg-gray-700/40 rounded-lg p-3">
                   <div className="text-xs text-gray-400 mb-1">User ID</div>
@@ -1134,14 +1216,14 @@ export default function DiscordClient() {
                     </button>
                   </div>
                 </div>
-                
+
                 {selectedUser.bio && (
                   <div className="bg-gray-700/40 rounded-lg p-3">
                     <div className="text-xs text-gray-400 mb-1">About Me</div>
                     <div className="text-sm text-gray-300">{selectedUser.bio}</div>
                   </div>
                 )}
-                
+
                 <div className="flex gap-2">
                   <Button
                     variant="secondary"

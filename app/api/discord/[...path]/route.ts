@@ -16,7 +16,7 @@ async function handleDiscordRequest(
 
   try {
     const url = new URL(`${DISCORD_API_BASE}/${path.join('/')}`);
-    
+
     if (method === 'GET') {
       const searchParams = request.nextUrl.searchParams;
       searchParams.forEach((value, key) => {
@@ -25,7 +25,7 @@ async function handleDiscordRequest(
     }
 
     const headers: HeadersInit = {
-      'Authorization': authorization,
+      Authorization: authorization,
       'Content-Type': 'application/json',
     };
 
@@ -56,44 +56,26 @@ async function handleDiscordRequest(
     return NextResponse.json(data);
   } catch (error) {
     console.error('Discord API proxy error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function GET(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleDiscordRequest(request, params, 'GET');
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function POST(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleDiscordRequest(request, params, 'POST');
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleDiscordRequest(request, params, 'PATCH');
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function PUT(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleDiscordRequest(request, params, 'PUT');
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+export async function DELETE(request: NextRequest, { params }: { params: { path: string[] } }) {
   return handleDiscordRequest(request, params, 'DELETE');
 }
