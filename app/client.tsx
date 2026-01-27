@@ -671,7 +671,7 @@ const MessageComponent: React.FC<{
   return (
     <div
       id={`message-${message.id}`}
-      className="group flex gap-3 px-4 py-2 hover:bg-gray-800/40 transition-colors relative"
+      className="group flex gap-4 px-4 py-0.5 hover:bg-[#2e3035] transition-colors relative mt-[17px]"
     >
       <img
         src={userAvatarUrl(message.author)}
@@ -680,23 +680,25 @@ const MessageComponent: React.FC<{
         className="w-10 h-10 rounded-full cursor-pointer hover:opacity-80 transition-opacity flex-shrink-0 mt-0.5"
       />
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-baseline gap-2 mb-1">
+      <div className="flex-1 min-w-0 pt-[2px]">
+        <div className="flex items-center gap-2 leading-[22px]">
           <button
-            className={`font-semibold hover:underline cursor-pointer ${
-              isCurrentUser ? 'text-green-400' : 'text-gray-100'
+            className={`font-medium text-[15px] hover:underline cursor-pointer ${
+              isCurrentUser ? 'text-[#00a8fc]' : 'text-[#f2f3f5]'
             }`}
             onClick={() => onUserClick?.(message.author)}
           >
             {formatUser(message.author)}
           </button>
           {message.author.bot && (
-            <span className="text-xs bg-blue-600/80 text-white px-1.5 py-0.5 rounded font-medium">
-              BOT
+            <span className="text-[10px] bg-[#5865f2] text-white px-1 py-0.5 rounded font-semibold uppercase">
+              Bot
             </span>
           )}
-          <span className="text-xs text-gray-500">{formatDate(message.timestamp)}</span>
-          {message.edited_timestamp && <span className="text-xs text-gray-500">(edited)</span>}
+          <span className="text-xs text-[#949ba4] font-medium">{formatDate(message.timestamp)}</span>
+          {message.edited_timestamp && (
+            <span className="text-[10px] text-[#949ba4]">(edited)</span>
+          )}
         </div>
 
         <div className="relative">
@@ -721,13 +723,13 @@ const MessageComponent: React.FC<{
           ) : (
             <>
               {message.content && (
-                <div className="whitespace-pre-wrap break-words text-gray-200 leading-relaxed">
+                <div className="whitespace-pre-wrap break-words text-[#dbdee1] text-[15px] leading-[1.375rem]">
                   {parseDiscordMarkdown(message.content)}
                 </div>
               )}
 
               {message.embeds && message.embeds.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-2">
                   {message.embeds.map((embed, i) => (
                     <MessageEmbed key={i} embed={embed} />
                   ))}
@@ -735,7 +737,7 @@ const MessageComponent: React.FC<{
               )}
 
               {message.attachments && message.attachments.length > 0 && (
-                <div className="space-y-2">
+                <div className="space-y-2 mt-2">
                   {message.attachments.map((attachment) => (
                     <MessageAttachment key={attachment.id} attachment={attachment} />
                   ))}
@@ -744,19 +746,32 @@ const MessageComponent: React.FC<{
             </>
           )}
 
-          <div className="absolute -top-4 right-0 opacity-0 group-hover:opacity-100 transition-opacity">
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="bg-gray-700/90 hover:bg-gray-600 px-2 py-1 rounded text-gray-300 text-sm border border-gray-600/50"
-            >
-              ⋮
-            </button>
+          <div className="absolute -top-4 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="bg-[#2b2d31] border border-[#1e1f22] rounded shadow-lg flex items-center divide-x divide-[#1e1f22]">
+              <button
+                className="px-2 py-1 hover:bg-[#35363c] transition-colors"
+                title="Add reaction"
+              >
+                <svg className="w-4 h-4 text-[#b5bac1]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm0 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM7.5 9.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm9 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM12 17.5c-2.33 0-4.32-1.45-5.12-3.5h10.24c-.8 2.05-2.79 3.5-5.12 3.5z" />
+                </svg>
+              </button>
+              <button
+                onClick={() => setShowMenu(!showMenu)}
+                className="px-2 py-1 hover:bg-[#35363c] transition-colors"
+                title="More"
+              >
+                <svg className="w-4 h-4 text-[#b5bac1]" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           {showMenu && (
             <div
               ref={menuRef}
-              className="absolute right-0 top-8 w-40 bg-gray-800 border border-gray-600/50 rounded-lg shadow-xl z-20 overflow-hidden"
+              className="absolute right-0 top-6 w-44 bg-[#111214] rounded-md shadow-xl z-20 overflow-hidden py-1.5"
             >
               {isCurrentUser && (
                 <>
@@ -765,16 +780,23 @@ const MessageComponent: React.FC<{
                       setIsEditing(true);
                       setShowMenu(false);
                     }}
-                    className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center gap-2"
+                    className="w-full text-left px-2 py-1.5 text-sm text-[#dbdee1] hover:bg-[#5865f2] hover:text-white transition-colors flex items-center gap-2"
                   >
-                    <span>✏️</span> Edit Message
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                    </svg>
+                    Edit Message
                   </button>
                   <button
                     onClick={handleDelete}
-                    className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-gray-700 transition-colors flex items-center gap-2"
+                    className="w-full text-left px-2 py-1.5 text-sm text-[#f23f43] hover:bg-[#f23f43] hover:text-white transition-colors flex items-center gap-2"
                   >
-                    <span>🗑️</span> Delete Message
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+                    </svg>
+                    Delete Message
                   </button>
+                  <div className="h-px bg-[#4e5058] my-1" />
                 </>
               )}
               <button
@@ -782,9 +804,12 @@ const MessageComponent: React.FC<{
                   navigator.clipboard.writeText(message.id);
                   setShowMenu(false);
                 }}
-                className="w-full text-left px-3 py-2 text-sm text-gray-200 hover:bg-gray-700 transition-colors flex items-center gap-2"
+                className="w-full text-left px-2 py-1.5 text-sm text-[#dbdee1] hover:bg-[#5865f2] hover:text-white transition-colors flex items-center gap-2"
               >
-                <span>📋</span> Copy ID
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" />
+                </svg>
+                Copy Message ID
               </button>
             </div>
           )}
@@ -809,6 +834,8 @@ export default function DiscordClient() {
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
   const [roles, setRoles] = useState<Role[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
+  const [dmChannels, setDmChannels] = useState<Channel[]>([]);
+  const [isDMView, setIsDMView] = useState(false);
 
   // Messages
   const [messages, setMessages] = useState<Message[]>([]);
@@ -845,16 +872,20 @@ export default function DiscordClient() {
   useEffect(() => {
     if (!authToken) return;
     authenticate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken]);
 
   useEffect(() => {
     if (!authToken || !botUser) return;
     loadGuilds();
+    loadDMChannels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken, botUser]);
 
   useEffect(() => {
     if (!authToken || !selectedGuildId) return;
     loadGuildData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken, selectedGuildId]);
 
   useEffect(() => {
@@ -863,6 +894,7 @@ export default function DiscordClient() {
       return;
     }
     loadMessages();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authToken, selectedChannelId]);
 
   // API Calls
@@ -896,6 +928,16 @@ export default function DiscordClient() {
       console.error('Failed to load guilds:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadDMChannels = async () => {
+    if (!authToken) return;
+    try {
+      const data = await authedFetch<Channel[]>(authToken, '/users/@me/channels');
+      setDmChannels(data.filter((ch) => ch.type === 1 || ch.type === 3));
+    } catch (error) {
+      console.error('Failed to load DM channels:', error);
     }
   };
 
@@ -1024,75 +1066,98 @@ export default function DiscordClient() {
   // Login Screen
   if (!authToken || !botUser) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center p-6 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-        <Card className="w-full max-w-md shadow-2xl">
+      <div className="fixed inset-0 flex items-center justify-center p-6 bg-[#313338]">
+        <div className="w-full max-w-md bg-[#2b2d31] rounded-lg shadow-xl p-8">
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-4xl shadow-lg">
+            <div className="w-20 h-20 rounded-full bg-[#5865f2] flex items-center justify-center text-4xl shadow-lg">
               🤖
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-center mb-2 text-gray-100">BotClienty</h1>
-          <p className="text-gray-400 text-center mb-8">Discord Bot Web Client</p>
+          <h1 className="text-2xl font-bold text-center mb-2 text-white">Welcome to BotClienty</h1>
+          <p className="text-[#b5bac1] text-center mb-6 text-sm">
+            Discord Bot Web Client with DM Support
+          </p>
 
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium mb-2 text-gray-200">Bot Token</label>
-              <Input
+              <label className="block text-xs font-bold mb-2 text-[#b5bac1] uppercase">
+                Bot Token <span className="text-[#f23f43]">*</span>
+              </label>
+              <input
                 type="password"
                 placeholder="Enter your Discord bot token"
                 value={tokenInput}
                 onChange={(e) => setTokenInput(e.target.value)}
                 autoFocus
+                className="w-full bg-[#1e1f22] border border-[#1e1f22] rounded-[3px] px-3 py-2.5 text-[15px] text-[#dbdee1] placeholder-[#87898c] focus:outline-none focus:border-[#00a8fc] transition-colors"
               />
             </div>
 
             {authError && (
-              <div className="bg-red-500/10 border border-red-500/50 p-3 rounded-lg">
-                <p className="text-red-400 text-sm flex items-center gap-2">
-                  <span>⚠️</span> {authError}
+              <div className="bg-[#f23f43]/10 border border-[#f23f43] p-3 rounded-[3px]">
+                <p className="text-[#f23f43] text-sm flex items-center gap-2">
+                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
+                  </svg>
+                  {authError}
                 </p>
               </div>
             )}
 
-            <Button type="submit" variant="primary" className="w-full" disabled={isAuthenticating}>
+            <button
+              type="submit"
+              disabled={isAuthenticating}
+              className="w-full bg-[#5865f2] hover:bg-[#4752c4] text-white font-medium py-2.5 rounded-[3px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               {isAuthenticating ? (
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   Authenticating...
                 </span>
               ) : (
-                'Connect Bot'
+                'Log In'
               )}
-            </Button>
+            </button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-gray-700/50">
-            <h3 className="font-semibold mb-3 text-gray-200">Features</h3>
-            <div className="space-y-2 text-sm text-gray-400">
+          <div className="mt-6 pt-6 border-t border-[#3f4147]">
+            <p className="text-xs text-[#949ba4] mb-3 font-medium">FEATURES</p>
+            <div className="space-y-2 text-sm text-[#b5bac1]">
               <div className="flex items-center gap-2">
-                <span className="text-blue-400">✓</span> View all servers and channels
+                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+                View all servers and channels
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-blue-400">✓</span> Send and receive messages
+                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+                Send and receive messages
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-blue-400">✓</span> Rich embeds and attachments
+                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+                Direct message support
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-blue-400">✓</span> Edit and delete messages
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-blue-400">✓</span> User profiles and details
+                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                </svg>
+                Rich embeds and attachments
               </div>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
     );
   }
 
   const selectedGuild = guilds.find((g) => g.id === selectedGuildId);
-  const selectedChannel = channels.find((c) => c.id === selectedChannelId);
+  const selectedChannel = isDMView
+    ? dmChannels.find((c) => c.id === selectedChannelId)
+    : channels.find((c) => c.id === selectedChannelId);
   const textChannels = channels.filter((c) => c.type === 0);
   const voiceChannels = channels.filter((c) => c.type === 2);
   const categories = channels.filter((c) => c.type === 4);
@@ -1100,21 +1165,43 @@ export default function DiscordClient() {
   return (
     <div className="flex h-screen bg-gray-900 text-gray-100">
       {/* Server Sidebar */}
-      <nav className="w-20 bg-gray-900 border-r border-gray-800 flex flex-col items-center py-4 gap-2 overflow-y-auto">
-        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center text-xl transition-all hover:rounded-lg cursor-pointer shadow-lg">
-          🏠
-        </div>
-        <div className="w-10 h-0.5 bg-gray-700 rounded-full my-1" />
+      <nav className="w-[72px] bg-[#1e1f22] flex flex-col items-center py-3 gap-2 overflow-y-auto">
+        <button
+          onClick={() => {
+            setIsDMView(true);
+            setSelectedGuildId(null);
+            setSelectedChannelId(null);
+            setMessages([]);
+          }}
+          className={`group relative w-12 h-12 rounded-[24px] bg-[#313338] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2] ${
+            isDMView ? 'rounded-[16px] bg-[#5865f2]' : ''
+          }`}
+          title="Direct Messages"
+        >
+          <svg
+            className={`w-6 h-6 transition-colors ${isDMView ? 'text-white' : 'text-[#b5bac1] group-hover:text-white'}`}
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" />
+            <path d="M8.5 12.5c.828 0 1.5-.672 1.5-1.5S9.328 9.5 8.5 9.5 7 10.172 7 11s.672 1.5 1.5 1.5zm7 0c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5S14 10.172 14 11s.672 1.5 1.5 1.5zm-3.5 4c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.05 2.79 3.5 5.12 3.5z" />
+          </svg>
+          {isDMView && (
+            <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
+          )}
+        </button>
+        <div className="w-8 h-[2px] bg-[#35363c] rounded-full my-1" />
         {guilds.map((guild) => (
           <button
             key={guild.id}
             onClick={() => {
+              setIsDMView(false);
               setSelectedGuildId(guild.id);
               setSelectedChannelId(null);
               setMessages([]);
             }}
-            className={`w-12 h-12 rounded-2xl overflow-hidden flex items-center justify-center transition-all hover:rounded-lg shadow-md ${
-              selectedGuildId === guild.id ? 'ring-2 ring-blue-500 rounded-lg' : ''
+            className={`group relative w-12 h-12 rounded-[24px] overflow-hidden flex items-center justify-center transition-all duration-200 hover:rounded-[16px] ${
+              selectedGuildId === guild.id && !isDMView ? 'rounded-[16px]' : ''
             }`}
             title={guild.name}
           >
@@ -1125,151 +1212,254 @@ export default function DiscordClient() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-800 flex items-center justify-center">
-                <span className="font-bold text-sm">{guild.name.charAt(0)}</span>
+              <div className="w-full h-full bg-[#313338] flex items-center justify-center group-hover:bg-[#5865f2] transition-colors">
+                <span className="font-semibold text-lg text-[#dbdee1] group-hover:text-white transition-colors">
+                  {guild.name.charAt(0).toUpperCase()}
+                </span>
               </div>
+            )}
+            {selectedGuildId === guild.id && !isDMView && (
+              <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
+            )}
+            {selectedGuildId !== guild.id && (
+              <div className="absolute left-0 w-1 h-0 group-hover:h-5 bg-white rounded-r-full -ml-[3px] transition-all duration-200" />
             )}
           </button>
         ))}
       </nav>
 
       {/* Channel Sidebar */}
-      <aside className="w-60 bg-gray-800/60 border-r border-gray-700/50 flex flex-col">
-        <header className="p-4 border-b border-gray-700/50 bg-gray-800/40">
-          <h2 className="font-bold text-base truncate text-gray-100">
-            {selectedGuild?.name || 'BotClienty'}
+      <aside className="w-60 bg-[#2b2d31] flex flex-col">
+        <header className="h-12 px-4 flex items-center border-b border-[#1e1f22] shadow-sm">
+          <h2 className="font-semibold text-base truncate text-white">
+            {isDMView ? 'Direct Messages' : selectedGuild?.name || 'BotClienty'}
           </h2>
-          {selectedGuild?.description && (
-            <p className="text-xs text-gray-400 truncate mt-1">{selectedGuild.description}</p>
-          )}
         </header>
 
-        <div className="flex-1 overflow-y-auto p-2 space-y-1">
-          {textChannels.length > 0 && (
-            <div className="mb-4">
-              <div className="text-xs font-semibold text-gray-400 uppercase px-2 mb-1 flex items-center gap-1">
-                <span>Text Channels</span>
-                <span className="text-gray-500">({textChannels.length})</span>
-              </div>
-              {textChannels.map((channel) => (
-                <button
-                  key={channel.id}
-                  onClick={() => setSelectedChannelId(channel.id)}
-                  className={`w-full text-left px-2 py-1.5 rounded hover:bg-gray-700/50 transition-colors flex items-center gap-2 group ${
-                    selectedChannelId === channel.id
-                      ? 'bg-gray-700/70 text-gray-100'
-                      : 'text-gray-400'
-                  }`}
-                >
-                  <span className="text-sm">{getChannelTypeIcon(channel.type)}</span>
-                  <span className="text-sm truncate flex-1">{channel.name}</span>
-                  {channel.nsfw && <span className="text-xs bg-red-600/80 px-1 rounded">NSFW</span>}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {voiceChannels.length > 0 && (
-            <div className="mb-4">
-              <div className="text-xs font-semibold text-gray-400 uppercase px-2 mb-1 flex items-center gap-1">
-                <span>Voice Channels</span>
-                <span className="text-gray-500">({voiceChannels.length})</span>
-              </div>
-              {voiceChannels.map((channel) => (
-                <div
-                  key={channel.id}
-                  className="px-2 py-1.5 rounded text-gray-400 flex items-center gap-2 text-sm"
-                >
-                  <span className="text-sm">{getChannelTypeIcon(channel.type)}</span>
-                  <span className="text-sm truncate">{channel.name}</span>
+        <div className="flex-1 overflow-y-auto p-2 space-y-[2px]">
+          {isDMView ? (
+            <>
+              {dmChannels.length > 0 ? (
+                dmChannels.map((channel) => {
+                  const recipient = channel.recipients?.[0];
+                  return (
+                    <button
+                      key={channel.id}
+                      onClick={() => {
+                        setSelectedChannelId(channel.id);
+                        setShowChannelInfo(false);
+                      }}
+                      className={`w-full text-left px-2 py-2 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-3 group ${
+                        selectedChannelId === channel.id
+                          ? 'bg-[#404249] text-white'
+                          : 'text-[#949ba4]'
+                      }`}
+                    >
+                      {recipient && (
+                        <>
+                          <div className="relative">
+                            <img
+                              src={userAvatarUrl(recipient)}
+                              alt={recipient.username}
+                              className="w-8 h-8 rounded-full"
+                            />
+                            <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#23a559] border-[3px] border-[#2b2d31] rounded-full" />
+                          </div>
+                          <span className="text-sm font-medium truncate flex-1">
+                            {recipient.global_name || recipient.username}
+                          </span>
+                        </>
+                      )}
+                    </button>
+                  );
+                })
+              ) : (
+                <div className="text-center py-8 px-4">
+                  <div className="w-16 h-16 mx-auto mb-3 rounded-full bg-[#313338] flex items-center justify-center">
+                    <svg className="w-8 h-8 text-[#80848e]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" />
+                    </svg>
+                  </div>
+                  <p className="text-[#b5bac1] text-sm">No direct messages</p>
                 </div>
-              ))}
-            </div>
-          )}
+              )}
+            </>
+          ) : (
+            <>
+              {textChannels.length > 0 && (
+                <div className="mb-4">
+                  <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1 flex items-center gap-1">
+                    <span>Text Channels</span>
+                  </div>
+                  {textChannels.map((channel) => (
+                    <button
+                      key={channel.id}
+                      onClick={() => setSelectedChannelId(channel.id)}
+                      className={`w-full text-left px-2 py-1.5 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-2 group ${
+                        selectedChannelId === channel.id
+                          ? 'bg-[#404249] text-white'
+                          : 'text-[#949ba4] hover:text-[#dbdee1]'
+                      }`}
+                    >
+                      <span className="text-xl">{getChannelTypeIcon(channel.type)}</span>
+                      <span className="text-[15px] font-medium truncate flex-1">{channel.name}</span>
+                      {channel.nsfw && (
+                        <span className="text-[10px] bg-[#f23f43] text-white px-1.5 py-0.5 rounded font-bold">
+                          NSFW
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
 
-          {channels.filter((c) => c.type === 0).length === 0 && !isLoading && (
-            <p className="text-gray-500 text-sm px-2 py-4">No channels available</p>
+              {voiceChannels.length > 0 && (
+                <div className="mb-4">
+                  <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1 flex items-center gap-1">
+                    <span>Voice Channels</span>
+                  </div>
+                  {voiceChannels.map((channel) => (
+                    <div
+                      key={channel.id}
+                      className="px-2 py-1.5 rounded text-[#949ba4] flex items-center gap-2 text-sm"
+                    >
+                      <span className="text-xl">{getChannelTypeIcon(channel.type)}</span>
+                      <span className="text-[15px] font-medium truncate">{channel.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {channels.filter((c) => c.type === 0).length === 0 && !isLoading && (
+                <p className="text-[#949ba4] text-sm px-2 py-4">No channels available</p>
+              )}
+            </>
           )}
         </div>
 
-        <div className="p-3 border-t border-gray-700/50 bg-gray-800/40">
-          <div className="flex items-center gap-3 mb-3">
-            <img
-              src={userAvatarUrl(botUser)}
-              alt={botUser.username}
-              className="w-8 h-8 rounded-full"
-            />
+        <div className="h-[52px] px-2 flex items-center bg-[#232428]">
+          <div className="flex items-center gap-2 flex-1 min-w-0 px-2 py-1 rounded hover:bg-[#35363c] transition-colors cursor-pointer">
+            <div className="relative flex-shrink-0">
+              <img
+                src={userAvatarUrl(botUser)}
+                alt={botUser.username}
+                className="w-8 h-8 rounded-full"
+              />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#23a559] border-[3px] border-[#232428] rounded-full" />
+            </div>
             <div className="flex-1 min-w-0">
-              <p className="font-medium text-sm text-gray-100 truncate">
+              <p className="font-semibold text-sm text-white truncate leading-[18px]">
                 {botUser.global_name || botUser.username}
               </p>
-              <p className="text-xs text-gray-400 truncate">#{botUser.discriminator}</p>
+              <p className="text-xs text-[#b5bac1] truncate leading-[13px]">
+                #{botUser.discriminator}
+              </p>
             </div>
+            <button
+              onClick={handleLogout}
+              className="flex-shrink-0 p-1 hover:bg-[#4e505899] rounded transition-colors"
+              title="Logout"
+            >
+              <svg className="w-5 h-5 text-[#b5bac1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
           </div>
-          <Button variant="danger" className="w-full text-sm py-2" onClick={handleLogout}>
-            Logout
-          </Button>
         </div>
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col bg-gray-900/50">
+      <main className="flex-1 flex flex-col bg-[#313338]">
         {/* Chat Header */}
-        <header className="px-4 py-3 border-b border-gray-700/50 bg-gray-800/40 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-gray-400">
-              {selectedChannel ? getChannelTypeIcon(selectedChannel.type) : '#'}
-            </span>
-            <h1 className="text-lg font-semibold text-gray-100">
-              {selectedChannel?.name || 'Select a channel'}
-            </h1>
-            {selectedChannel?.nsfw && (
-              <span className="text-xs bg-red-600/80 text-white px-2 py-0.5 rounded font-medium">
-                NSFW
-              </span>
+        <header className="h-12 px-4 flex items-center border-b border-[#1e1f22] shadow-sm">
+          <div className="flex items-center gap-2 flex-1">
+            {selectedChannel && (
+              <>
+                {isDMView ? (
+                  <>
+                    {selectedChannel.recipients?.[0] && (
+                      <>
+                        <div className="relative">
+                          <img
+                            src={userAvatarUrl(selectedChannel.recipients[0])}
+                            alt={selectedChannel.recipients[0].username}
+                            className="w-6 h-6 rounded-full"
+                          />
+                          <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#23a559] border-[2px] border-[#313338] rounded-full" />
+                        </div>
+                        <h1 className="text-base font-semibold text-white">
+                          {selectedChannel.recipients[0].global_name || selectedChannel.recipients[0].username}
+                        </h1>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span className="text-[#80848e] text-xl">
+                      {getChannelTypeIcon(selectedChannel.type)}
+                    </span>
+                    <h1 className="text-base font-semibold text-white">
+                      {selectedChannel.name}
+                    </h1>
+                    {selectedChannel.nsfw && (
+                      <span className="text-[10px] bg-[#f23f43] text-white px-1.5 py-0.5 rounded font-bold">
+                        NSFW
+                      </span>
+                    )}
+                  </>
+                )}
+                {selectedChannel.topic && (
+                  <>
+                    <div className="w-px h-6 bg-[#3f4147] mx-2" />
+                    <p className="text-sm text-[#b5bac1] truncate">{selectedChannel.topic}</p>
+                  </>
+                )}
+              </>
+            )}
+            {!selectedChannel && (
+              <h1 className="text-base font-semibold text-[#949ba4]">
+                {isDMView ? 'Select a direct message' : 'Select a channel'}
+              </h1>
             )}
           </div>
-          {selectedChannel && (
+          {selectedChannel && !isDMView && (
             <button
               onClick={() => setShowChannelInfo(!showChannelInfo)}
-              className="text-gray-400 hover:text-gray-200 transition-colors"
+              className="p-1 text-[#b5bac1] hover:text-[#dbdee1] transition-colors"
               title="Channel Info"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
+              <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
               </svg>
             </button>
           )}
         </header>
-
-        {selectedChannel?.topic && (
-          <div className="px-4 py-2 bg-gray-800/30 border-b border-gray-700/50">
-            <p className="text-sm text-gray-400">{selectedChannel.topic}</p>
-          </div>
-        )}
 
         {/* Messages Container */}
         <div className="flex-1 overflow-y-auto">
           {isLoading ? (
             <div className="flex justify-center items-center h-full">
               <div className="text-center">
-                <div className="w-12 h-12 border-4 border-gray-700 border-t-blue-500 rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-gray-400">Loading messages...</p>
+                <div className="w-12 h-12 border-4 border-[#1e1f22] border-t-[#5865f2] rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-[#b5bac1]">Loading messages...</p>
               </div>
             </div>
           ) : messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full">
+            <div className="flex items-center justify-center h-full px-4">
               <div className="text-center max-w-md">
-                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gray-800/60 flex items-center justify-center text-4xl">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#2b2d31] flex items-center justify-center text-3xl">
                   💬
                 </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-200">No messages yet</h3>
-                <p className="text-gray-400">Be the first to send a message in this channel!</p>
+                <h3 className="text-base font-semibold mb-1 text-[#f2f3f5]">
+                  {selectedChannel
+                    ? isDMView
+                      ? `This is the beginning of your direct message history with @${selectedChannel.recipients?.[0]?.username || 'user'}.`
+                      : `Welcome to #${selectedChannel.name}!`
+                    : 'No channel selected'}
+                </h3>
+                <p className="text-sm text-[#b5bac1]">
+                  {selectedChannel && 'Be the first to send a message!'}
+                </p>
               </div>
             </div>
           ) : (
@@ -1290,37 +1480,50 @@ export default function DiscordClient() {
         </div>
 
         {/* Message Composer */}
-        <footer className="p-4 border-t border-gray-700/50 bg-gray-800/40">
-          <form onSubmit={handleSendMessage} className="flex gap-2">
-            <TextArea
-              value={messageInput}
-              onChange={(e) => setMessageInput(e.target.value)}
-              placeholder={
-                selectedChannelId
-                  ? `Message #${selectedChannel?.name || 'channel'}`
-                  : 'Select a channel first'
-              }
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage(e);
+        <div className="px-4 pb-6">
+          <form onSubmit={handleSendMessage}>
+            <div className="bg-[#383a40] rounded-lg px-4 py-3 flex items-center gap-2">
+              <button
+                type="button"
+                className="text-[#b5bac1] hover:text-[#dbdee1] transition-colors flex-shrink-0"
+                title="Add attachment"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" />
+                </svg>
+              </button>
+              <input
+                type="text"
+                value={messageInput}
+                onChange={(e) => setMessageInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage(e);
+                  }
+                }}
+                placeholder={
+                  selectedChannelId
+                    ? isDMView
+                      ? `Message @${selectedChannel?.recipients?.[0]?.username || 'user'}`
+                      : `Message #${selectedChannel?.name || 'channel'}`
+                    : 'Select a channel first'
                 }
-              }}
-              className="flex-1"
-              disabled={!selectedChannelId}
-              rows={1}
-            />
-
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={!selectedChannelId || !messageInput.trim() || isLoading}
-              className="px-6"
-            >
-              Send
-            </Button>
+                disabled={!selectedChannelId}
+                className="flex-1 bg-transparent text-[#dbdee1] text-[15px] placeholder-[#87898c] focus:outline-none"
+              />
+              <button
+                type="button"
+                className="text-[#b5bac1] hover:text-[#dbdee1] transition-colors flex-shrink-0"
+                title="Emojis"
+              >
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+                </svg>
+              </button>
+            </div>
           </form>
-        </footer>
+        </div>
       </main>
 
       {/* Right Sidebar - Channel Info */}
