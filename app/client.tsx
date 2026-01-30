@@ -1037,6 +1037,194 @@ const QuickSwitcher: React.FC<{
   );
 };
 
+// ============ USER SEARCH MODAL ============
+
+const UserSearchModal: React.FC<{
+  users: User[];
+  onUserClick: (user: User) => void;
+  onClose: () => void;
+}> = ({ users, onUserClick, onClose }) => {
+  const [query, setQuery] = useState('');
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 border-b border-[#1e1f22]">
+          <h2 className="text-xl font-bold text-white mb-4">Search Users</h2>
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            autoFocus
+            className="w-full bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5865f2]"
+          />
+        </div>
+        <div className="flex-1 overflow-y-auto p-2">
+          {users.length === 0 ? (
+            <div className="text-center py-8 text-[#949ba4]">No users found</div>
+          ) : (
+            users.map((user) => (
+              <button
+                key={user.id}
+                onClick={() => onUserClick(user)}
+                className="w-full text-left px-4 py-3 rounded-lg hover:bg-[#35363c] transition-colors flex items-center gap-3"
+              >
+                <img src={userAvatarUrl(user)} alt="" className="w-10 h-10 rounded-full" />
+                <div className="flex-1">
+                  <div className="font-semibold text-[#f2f3f5]">{formatUser(user)}</div>
+                  <div className="text-sm text-[#949ba4]">@{user.username}</div>
+                </div>
+                {user.bot && (
+                  <span className="text-xs bg-[#5865f2] text-white px-2 py-1 rounded font-bold">BOT</span>
+                )}
+              </button>
+            ))
+          )}
+        </div>
+        <div className="p-4 border-t border-[#1e1f22] flex justify-end">
+          <Button onClick={onClose}>Close</Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============ CREATE SERVER MODAL ============
+
+const CreateServerModal: React.FC<{
+  onClose: () => void;
+  onCreate: (name: string, icon: File | null) => void;
+}> = ({ onClose, onCreate }) => {
+  const [name, setName] = useState('');
+  const [icon, setIcon] = useState<File | null>(null);
+  const [iconPreview, setIconPreview] = useState<string>('');
+
+  const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setIcon(file);
+      setIconPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name.trim()) {
+      onCreate(name.trim(), icon);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-2xl max-w-md w-full animate-scale-in" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4">
+          <h2 className="text-xl font-bold text-white mb-6">Create Server</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-semibold text-[#b5bac1] mb-2">Server Icon</label>
+              <div className="flex items-center gap-4">
+                <div
+                  className="w-20 h-20 rounded-full bg-[#35363c] flex items-center justify-center cursor-pointer hover:bg-[#404249] transition-colors relative overflow-hidden group"
+                  onClick={() => document.getElementById('server-icon-input')?.click()}
+                >
+                  {iconPreview ? (
+                    <img src={iconPreview} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <svg className="w-10 h-10 text-[#949ba4]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M19 13h-6v6h-2v-6h-2v-2h6v2zM7 9c-1.1 0-2 .9-2 2v2h-2c0 1.1.9 2 2s.9-2 2-2zm8 0c-1.1 0-2 .9-2 2v2h-2c0 1.1.9 2 2s.9-2 2-2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4z" />
+                    </svg>
+                  )}
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-white text-xs">Upload</span>
+                  </div>
+                </div>
+                <input
+                  id="server-icon-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleIconChange}
+                  className="hidden"
+                />
+                {icon && (
+                  <button
+                    type="button"
+                    onClick={() => { setIcon(null); setIconPreview(''); }}
+                    className="text-[#f23f43] text-sm hover:underline"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-[#b5bac1] mb-2">Server Name</label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="My Awesome Server"
+                maxLength={100}
+                autoFocus
+                className="w-full bg-[#1e1f22] text-[#dbdee1] placeholder-[#87898c] px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#5865f2]"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={onClose} variant="secondary">Cancel</Button>
+              <Button type="submit" variant="primary" disabled={!name.trim()}>
+                Create Server
+              </Button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// ============ EMOJI PICKER ============
+
+const EmojiPicker: React.FC<{
+  onSelect: (emoji: string) => void;
+  onClose: () => void;
+}> = ({ onSelect, onClose }) => {
+  const emojis = [
+    '😀', '😂', '😍', '🥰', '🎉', '🎊', '💯', '✨', '💪',
+    '❤️', '🧡', '💔', '👍', '👎�', '🔥', '⭐', '🌟', '💕',
+    '😎', '🤔', '😮', '🤯', '😅', '😢', '😡', '🤣', '🤬',
+    '👀', '👽', '🐱', '🌈', '🌍', '💻', '🎮', '🎨', '🎭',
+    '🍕', '🍔', '☕', '🍷', '🥤', '🍺', '🥝', '🍞', '🍰',
+    '⚽', '🏀', '🎸', '🎺', '🎻', '🎤', '🎧', '🏹', '🏈',
+    '🚗', '🚀', '🛸', '🌎', '🎱', '🎬', '📺', '📷', '📸',
+  ];
+
+  return (
+    <div className="fixed bottom-24 right-4 bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-xl p-3 z-50 animate-scale-in">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-semibold text-[#b5bac1]">Emoji Picker</h3>
+        <button onClick={onClose} className="text-[#949ba4] hover:text-[#dbdee1]">
+          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z" />
+          </svg>
+        </button>
+      </div>
+      <div className="grid grid-cols-8 gap-1 max-h-64 overflow-y-auto">
+        {emojis.map((emoji) => (
+          <button
+            key={emoji}
+            onClick={() => onSelect(emoji)}
+            className="w-9 h-9 text-2xl hover:bg-[#35363c] rounded transition-colors flex items-center justify-center"
+          >
+            {emoji}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ============ MEMBER LIST COMPONENT ============
 
 const MemberList: React.FC<{
@@ -1136,6 +1324,16 @@ export default function DiscordClient() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
+
+  // New UI states
+  const [showCreateServer, setShowCreateServer] = useState(false);
+  const [showUserSearch, setShowUserSearch] = useState(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
+  const [serverName, setServerName] = useState('');
+  const [serverIcon, setServerIcon] = useState<File | null>(null);
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -1395,6 +1593,79 @@ export default function DiscordClient() {
     setShowQuickSwitcher(false);
   };
 
+  const handleSearchUsers = async (query: string) => {
+    if (!authToken || !query.trim()) return;
+
+    try {
+      const data = await authedFetch<{ members: { user: User }[] }>(authToken, `/guilds/${selectedGuildId}/members/search?query=${encodeURIComponent(query)}&limit=5`);
+      const users = data.members?.map(m => m.user) || [];
+      setSearchedUsers(users);
+    } catch (error) {
+      console.error('Failed to search users:', error);
+    }
+  };
+
+  const handleStartDM = async (user: User) => {
+    if (!authToken) return;
+
+    try {
+      const data = await authedFetch<Channel>(authToken, '/users/@me/channels', {
+        method: 'POST',
+        body: JSON.stringify({ recipient_id: user.id }),
+      });
+
+      const newChannel = { ...data, recipients: [user], type: 1 };
+      setDmChannels([newChannel, ...dmChannels]);
+      setIsDMView(true);
+      setSelectedGuildId(null);
+      setSelectedChannelId(newChannel.id);
+      setMessages([]);
+      setShowUserSearch(false);
+      setUserSearchQuery('');
+      setToast({ message: `Started DM with ${user.username}`, type: 'success' });
+    } catch (error) {
+      console.error('Failed to create DM:', error);
+      setToast({ message: 'Failed to start DM', type: 'error' });
+    }
+  };
+
+  const handleCreateServer = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!authToken || !serverName.trim()) return;
+
+    try {
+      const data = await authedFetch<Guild>(authToken, '/guilds', {
+        method: 'POST',
+        body: JSON.stringify({ name: serverName }),
+      });
+
+      setGuilds([...guilds, data]);
+      setServerName('');
+      setServerIcon(null);
+      setShowCreateServer(false);
+      setToast({ message: 'Server created!', type: 'success' });
+    } catch (error) {
+      console.error('Failed to create server:', error);
+      setToast({ message: 'Failed to create server', type: 'error' });
+    }
+  };
+
+  const handleReply = (messageId: string) => {
+    const message = messages.find(m => m.id === messageId);
+    if (message) {
+      setReplyingTo(messageId);
+      setMessageInput(`> <@${message.author.username}> ${message.content.substring(0, 50)}...`);
+      // Scroll to message composer
+      const input = document.querySelector('input[type="text"]') as HTMLInputElement;
+      input?.focus();
+    }
+  };
+
+  const handleCancelReply = () => {
+    setReplyingTo(null);
+    setMessageInput('');
+  };
+
   const handleUserClick = (user: User) => {
     setSelectedUser(user);
     setShowUserProfile(true);
@@ -1544,17 +1815,52 @@ export default function DiscordClient() {
       {/* Server Sidebar */}
       <nav className="w-[72px] bg-[#1e1f22] flex flex-col items-center py-3 gap-2 overflow-y-auto">
         <button
-          onClick={() => {
-            setIsDMView(true);
-            setSelectedGuildId(null);
-            setSelectedChannelId(null);
-            setMessages([]);
-          }}
-          className={`group relative w-12 h-12 rounded-[24px] bg-[#313338] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2] ${
-            isDMView ? 'rounded-[16px] bg-[#5865f2]' : ''
-          }`}
-          title="Direct Messages"
+           onClick={() => {
+             setIsDMView(true);
+             setSelectedGuildId(null);
+             setSelectedChannelId(null);
+             setMessages([]);
+           }}
+           className={`group relative w-12 h-12 rounded-[24px] bg-[#313338] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2] ${
+             isDMView ? 'rounded-[16px] bg-[#5865f2]' : ''
+           }`}
+           title="Direct Messages"
         >
+          <svg
+             className={`w-6 h-6 transition-colors ${isDMView ? 'text-white' : 'text-[#b5bac1] group-hover:text-white'}`}
+             fill="currentColor"
+             viewBox="0 0 24 24"
+          >
+             <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8s3.589-8 8-8 3.589 8 8-3.589 8-8 8zm3.5 4c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.04 2.78 3.5 5.11 3.5z" />
+             <path d="M8.5 12.5c.828 0 1.5-.672 1.5-1.5S9.328 9.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+          </svg>
+          {isDMView && (
+            <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
+          )}
+        </button>
+
+        {/* User Search Button */}
+        <button
+          onClick={() => {
+            if (authToken && selectedGuildId) {
+              setShowUserSearch(true);
+              handleSearchUsers('');
+            } else {
+              setShowCreateServer(true);
+            }
+          }}
+          className="group relative w-12 h-12 rounded-[24px] bg-[#23a559] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2]"
+          title={selectedGuildId ? "Search Users" : "Create Server"}
+        >
+          <svg
+            className="w-6 h-6 text-white group-hover:scale-110 transition-transform"
+            fill="currentColor"
+            viewBox="0 0 24 24"
+          >
+            {selectedGuildId ? (
+              <path d="M15.5 14h-2.5l-1.5-1.5-1.414L10 14H5c-.55 0-1-.45-1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.cancel and the create server button.
+
+        I'll create a simpler version with just the two buttons after the divider.</think><tool_call>GrepTool<arg_key>path</arg_key><arg_value>/home/engine/project/app/client.tsx
           <svg
             className={`w-6 h-6 transition-colors ${isDMView ? 'text-white' : 'text-[#b5bac1] group-hover:text-white'}`}
             fill="currentColor"
@@ -1569,6 +1875,51 @@ export default function DiscordClient() {
         </button>
         <div className="w-8 h-[2px] bg-[#35363c] rounded-full my-1" />
         {guilds.map((guild) => (
+          <button
+            key={guild.id}
+            onClick={() => {
+              setIsDMView(false);
+              setSelectedGuildId(guild.id);
+              setSelectedChannelId(null);
+              setMessages([]);
+            }}
+            className={`group relative w-12 h-12 rounded-[24px] overflow-hidden flex items-center justify-center transition-all duration-200 hover:rounded-[16px] ${
+              selectedGuildId === guild.id && !isDMView ? 'rounded-[16px]' : ''
+            }`}
+            title={guild.name}
+          >
+            {guild.icon ? (
+              <img
+                src={guildIconUrl(guild)}
+                alt={guild.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-[#313338] flex items-center justify-center group-hover:bg-[#5865f2] transition-colors">
+                <span className="font-semibold text-lg text-[#dbdee1] group-hover:text-white transition-colors">
+                  {guild.name.charAt(0).toUpperCase()}
+                </span>
+              </div>
+            )}
+            {selectedGuildId === guild.id && !isDMView && (
+              <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
+            )}
+            {selectedGuildId !== guild.id && (
+              <div className="absolute left-0 w-1 h-0 group-hover:h-5 bg-white rounded-r-full -ml-[3px] transition-all duration-200" />
+            )}
+          </button>
+        ))}
+        {/* Create Server Button */}
+        <button
+          onClick={() => setShowCreateServer(true)}
+          className="group relative w-12 h-12 rounded-[24px] bg-[#313338] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#23a559] hover:text-white text-[#23a559]"
+          title="Create Server"
+        >
+          <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M19 13h-6v6h-2v-6h-2v-2h6v-2h2v2h2v2h2v-2zM7 9c-1.1 0-2 .9-2 2v2h-2c-1.1 0-2 .9-2 2v4c0 1.1.9 2 2h4v2h4c1.1 0 2-.9 2-2v-4c0-1.1-.9-2-2-2-2h-4c-1.1 0-2-.9-2-2v-2h4v-2h-2v2h-2v2h-2c-1.1 0-2-.9-2-2v4c0 1.1.9 2 2h4v-2h-2v2h-2v2h-2v-2z" />
+          </svg>
+          <div className="absolute left-0 w-1 h-0 group-hover:h-5 bg-white rounded-r-full -ml-[3px] transition-all duration-200" />
+        </button>
           <button
             key={guild.id}
             onClick={() => {
@@ -2114,6 +2465,32 @@ export default function DiscordClient() {
             )}
           </div>
         </aside>
+      )}
+
+      {/* User Search Modal */}
+      {showUserSearch && (
+        <UserSearchModal
+          users={searchedUsers}
+          onUserClick={(user) => {
+            handleStartDM(user);
+            setSelectedUser(user);
+          }}
+          onClose={() => {
+            setShowUserSearch(false);
+            setSearchedUsers([]);
+            setUserSearchQuery('');
+          }}
+        />
+      )}
+
+      {/* Create Server Modal */}
+      {showCreateServer && (
+        <CreateServerModal
+          onClose={() => setShowCreateServer(false)}
+          onCreate={(name, icon) => {
+            handleCreateServer({ preventDefault() } as any, name, icon: icon || undefined });
+          }}
+        />
       )}
 
       {/* User Profile Modal */}
