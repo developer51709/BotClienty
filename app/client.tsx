@@ -1811,6 +1811,7 @@ export default function DiscordClient() {
         </div>
       </div>
     );
+  }
 
   const selectedGuild = guilds.find((g) => g.id === selectedGuildId);
   const selectedChannel = isDMView
@@ -1830,7 +1831,7 @@ export default function DiscordClient() {
 
     acc.push({ ...message, showHeader });
     return acc;
-  }, []);
+  }, [] as Array<Message & { showHeader: boolean }>);
 
   // Main app return
   return (
@@ -1854,8 +1855,8 @@ export default function DiscordClient() {
              fill="currentColor"
              viewBox="0 0 24 24"
           >
-             <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8s3.589-8 8-8 3.589 8 8-3.589 8-8 8zm3.5 4c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.04 2.78 3.5 5.11 3.5z" />
-             <path d="M8.5 12.5c.828 0 1.5-.672 1.5-1.5S9.328 9.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+             <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" />
+             <path d="M8.5 12.5c.828 0 1.5-.672 1.5-1.5S9.328 9.5 8.5 9.5 7 10.172 7 11s.672 1.5 1.5 1.5zm7 0c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5S14 10.172 14 11s.672 1.5 1.5 1.5zm-3.5 4c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.05 2.79 3.5 5.12 3.5z" />
           </svg>
           {isDMView && (
             <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
@@ -1881,20 +1882,11 @@ export default function DiscordClient() {
             viewBox="0 0 24 24"
           >
             {selectedGuildId ? (
-              <path d="M15.5 14h-2.5l-1.5-1.5-1.414L10 14H5c-.55 0-1-.45-1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-4c0-1.1 0-2-.9-2-.9-2-.9-2h-4c-1.1 0-2-.9-2-2-.9-2v-2h2c-.1 0-.2-.9-.2-.9-.2V7c0 1.1.9 2 2 .9 2v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.55 0 1 .45 1v-2h2c.cancel and the create server button.
-
-        I'll create a simpler version with just the two buttons after the divider.</think><tool_call>GrepTool<arg_key>path</arg_key><arg_value>/home/engine/project/app/client.tsx
-          <svg
-            className={`w-6 h-6 transition-colors ${isDMView ? 'text-white' : 'text-[#b5bac1] group-hover:text-white'}`}
-            fill="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" />
-            <path d="M8.5 12.5c.828 0 1.5-.672 1.5-1.5S9.328 9.5 8.5 9.5 7 10.172 7 11s.672 1.5 1.5 1.5zm7 0c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5S14 10.172 14 11s.672 1.5 1.5 1.5zm-3.5 4c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.05 2.79 3.5 5.12 3.5z" />
+              <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            ) : (
+              <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
+            )}
           </svg>
-          {isDMView && (
-            <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
-          )}
         </button>
         <div className="w-8 h-[2px] bg-[#35363c] rounded-full my-1" />
         {guilds.map((guild) => (
@@ -1943,40 +1935,6 @@ export default function DiscordClient() {
           </svg>
           <div className="absolute left-0 w-1 h-0 group-hover:h-5 bg-white rounded-r-full -ml-[3px] transition-all duration-200" />
         </button>
-          <button
-            key={guild.id}
-            onClick={() => {
-              setIsDMView(false);
-              setSelectedGuildId(guild.id);
-              setSelectedChannelId(null);
-              setMessages([]);
-            }}
-            className={`group relative w-12 h-12 rounded-[24px] overflow-hidden flex items-center justify-center transition-all duration-200 hover:rounded-[16px] ${
-              selectedGuildId === guild.id && !isDMView ? 'rounded-[16px]' : ''
-            }`}
-            title={guild.name}
-          >
-            {guild.icon ? (
-              <img
-                src={guildIconUrl(guild)}
-                alt={guild.name}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full bg-[#313338] flex items-center justify-center group-hover:bg-[#5865f2] transition-colors">
-                <span className="font-semibold text-lg text-[#dbdee1] group-hover:text-white transition-colors">
-                  {guild.name.charAt(0).toUpperCase()}
-                </span>
-              </div>
-            )}
-            {selectedGuildId === guild.id && !isDMView && (
-              <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
-            )}
-            {selectedGuildId !== guild.id && (
-              <div className="absolute left-0 w-1 h-0 group-hover:h-5 bg-white rounded-r-full -ml-[3px] transition-all duration-200" />
-            )}
-          </button>
-        ))}
       </nav>
 
       {/* Channel Sidebar */}
@@ -2131,6 +2089,8 @@ export default function DiscordClient() {
               })()}
 
 
+            </>
+          )}
           {channels.filter((c) => c.type === 0).length === 0 && !isLoading && !isDMView && (
             <p className="text-[#949ba4] text-sm px-2 py-4">No channels available</p>
           )}
@@ -2493,8 +2453,22 @@ export default function DiscordClient() {
       {showCreateServer && (
         <CreateServerModal
           onClose={() => setShowCreateServer(false)}
-          onCreate={(name, icon) => {
-            handleCreateServer({ preventDefault() } as any, name, icon: icon || undefined });
+          onCreate={async (name, icon) => {
+            if (!authToken || !name.trim()) return;
+            
+            try {
+              const data = await authedFetch<Guild>(authToken, '/guilds', {
+                method: 'POST',
+                body: JSON.stringify({ name: name.trim() }),
+              });
+              
+              setGuilds([...guilds, data]);
+              setShowCreateServer(false);
+              setToast({ message: 'Server created!', type: 'success' });
+            } catch (error) {
+              console.error('Failed to create server:', error);
+              setToast({ message: 'Failed to create server', type: 'error' });
+            }
           }}
         />
       )}
