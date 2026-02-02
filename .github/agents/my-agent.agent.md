@@ -15,16 +15,19 @@ This repository uses a multi-agent system to handle different types of developme
 ## Available Agents
 
 ### 🚀 Speed Agent
+
 - **Best for**: Quick fixes, simple changes
 - **Speed**: Very Fast
 - **See**: [speed-agent.md](./speed-agent.md)
 
 ### ⚖️ Balanced Agent
+
 - **Best for**: Feature development, moderate complexity tasks
 - **Speed**: Fast
 - **See**: [balanced-agent.md](./balanced-agent.md)
 
 ### 🧠 Complex Agent
+
 - **Best for**: Architectural changes, system-wide refactoring
 - **Speed**: Slower (higher quality)
 - **See**: [complex-agent.md](./complex-agent.md)
@@ -32,12 +35,14 @@ This repository uses a multi-agent system to handle different types of developme
 ## Choosing the Right Agent
 
 ### Use Speed Agent when:
+
 - Fixing typos or simple bugs
 - Updating configuration
 - Making small UI tweaks
 - Quick documentation updates
 
 ### Use Balanced Agent when:
+
 - Adding new features
 - Writing tests
 - Refactoring modules
@@ -45,6 +50,7 @@ This repository uses a multi-agent system to handle different types of developme
 - Code reviews
 
 ### Use Complex Agent when:
+
 - Redesigning architecture
 - Major refactoring across multiple files
 - Security audits
@@ -53,14 +59,14 @@ This repository uses a multi-agent system to handle different types of developme
 
 ## Agent Comparison
 
-| Feature | Speed | Balanced | Complex |
-|---------|-------|----------|---------|
-| Response Time | ⚡⚡⚡ | ⚡⚡ | ⚡ |
-| Context Window | Small | Medium | Large |
-| Code Complexity | Basic | Moderate | Advanced |
-| Multi-file Changes | ❌ | ✅ | ✅✅ |
-| Architectural Insight | Limited | Good | Excellent |
-| Cost Efficiency | Highest | Medium | Lowest |
+| Feature               | Speed   | Balanced | Complex   |
+| --------------------- | ------- | -------- | --------- |
+| Response Time         | ⚡⚡⚡  | ⚡⚡     | ⚡        |
+| Context Window        | Small   | Medium   | Large     |
+| Code Complexity       | Basic   | Moderate | Advanced  |
+| Multi-file Changes    | ❌      | ✅       | ✅✅      |
+| Architectural Insight | Limited | Good     | Excellent |
+| Cost Efficiency       | Highest | Medium   | Lowest    |
 
 ## How to Use
 
@@ -77,9 +83,9 @@ If no agent is specified, the system will automatically choose based on the comp
 ## Notes
 
 - **Speed Agent**: Optimized for development velocity
-- **Balanced Agent**: Best for day-to-day development  
+- **Balanced Agent**: Best for day-to-day development
 - **Complex Agent**: Use sparingly for high-impact changes
 
 ---
 
-*This agent system ensures optimal resource usage while maintaining high code quality.*
+_This agent system ensures optimal resource usage while maintaining high code quality._

@@ -18,7 +18,7 @@ exec('cd /home/engine/project && npm run build 2>&1', (error, stdout, stderr) =>
     console.error('Build error:', error);
     return;
   }
-  
+
   // Check if build succeeded
   if (stdout.includes('Build successful') || !stdout.includes('Failed to compile')) {
     console.log('Build succeeded!');
