@@ -13,7 +13,7 @@ while (i < lines.length) {
     newLines.push(lines[i]); // Keep this line
     newLines.push(''); // Add blank line
     i++;
-    
+
     // Add comment before return
     newLines.push('  // Render main app UI');
     i++;

@@ -139,14 +139,14 @@ function decodeHtmlEntities(text: string): string {
 
 function parseDiscordMarkdown(content: string): React.ReactNode {
   if (!content) return null;
-  
+
   // 1. Decode entities
   let text = decodeHtmlEntities(content);
 
   // 2. Split by lines to handle block elements
   const lines = text.split('\n');
   const result: React.ReactNode[] = [];
-  
+
   let i = 0;
   while (i < lines.length) {
     const line = lines[i];
@@ -162,9 +162,7 @@ function parseDiscordMarkdown(content: string): React.ReactNode {
       }
       result.push(
         <div key={`cb-${i}`} className="my-2">
-          {lang && (
-            <div className="text-xs text-[#949ba4] mb-1 font-mono px-1">{lang}</div>
-          )}
+          {lang && <div className="text-xs text-[#949ba4] mb-1 font-mono px-1">{lang}</div>}
           <code className="block bg-[#1e1f22] p-4 rounded-lg text-sm font-mono overflow-x-auto border border-[#1e1f22]">
             {codeContent}
           </code>
@@ -183,10 +181,14 @@ function parseDiscordMarkdown(content: string): React.ReactNode {
         '',
         'text-2xl font-bold mt-4 mb-2 border-b border-[#3f4147] pb-1',
         'text-xl font-bold mt-3 mb-1',
-        'text-lg font-bold mt-2 mb-1'
+        'text-lg font-bold mt-2 mb-1',
       ][level];
       const Tag = (level === 1 ? 'h1' : level === 2 ? 'h2' : 'h3') as any;
-      result.push(<Tag key={`h-${i}`} className={`${classes} text-white`}>{parseInlineMarkdown(title)}</Tag>);
+      result.push(
+        <Tag key={`h-${i}`} className={`${classes} text-white`}>
+          {parseInlineMarkdown(title)}
+        </Tag>
+      );
       i++;
       continue;
     }
@@ -200,7 +202,10 @@ function parseDiscordMarkdown(content: string): React.ReactNode {
         i++;
       }
       result.push(
-        <blockquote key={`bq-${i}`} className="border-l-4 border-[#4e5058] pl-4 my-1 text-[#dbdee1] italic bg-[#35363c]/30 py-1 rounded-r">
+        <blockquote
+          key={`bq-${i}`}
+          className="border-l-4 border-[#4e5058] pl-4 my-1 text-[#dbdee1] italic bg-[#35363c]/30 py-1 rounded-r"
+        >
           {quoteLines.map((ql, idx) => (
             <div key={idx}>{parseInlineMarkdown(ql)}</div>
           ))}
@@ -215,7 +220,11 @@ function parseDiscordMarkdown(content: string): React.ReactNode {
       const indent = listMatch[1].length;
       const content = listMatch[3];
       result.push(
-        <div key={`li-${i}`} className="flex gap-2 my-0.5" style={{ marginLeft: `${indent * 0.5 + 1}rem` }}>
+        <div
+          key={`li-${i}`}
+          className="flex gap-2 my-0.5"
+          style={{ marginLeft: `${indent * 0.5 + 1}rem` }}
+        >
           <span className="text-[#949ba4] mt-1.5 w-1.5 h-1.5 rounded-full bg-[#949ba4] flex-shrink-0" />
           <span className="text-[#dbdee1]">{parseInlineMarkdown(content)}</span>
         </div>
@@ -228,7 +237,11 @@ function parseDiscordMarkdown(content: string): React.ReactNode {
     if (line.trim() === '') {
       result.push(<div key={`br-${i}`} className="h-2" />);
     } else {
-      result.push(<div key={`p-${i}`} className="min-h-[1.375rem]">{parseInlineMarkdown(line)}</div>);
+      result.push(
+        <div key={`p-${i}`} className="min-h-[1.375rem]">
+          {parseInlineMarkdown(line)}
+        </div>
+      );
     }
     i++;
   }
@@ -252,7 +265,7 @@ function parseInlineMarkdown(text: string): React.ReactNode {
       const id = emojiMatch[3];
       const ext = isAnimated ? 'gif' : 'png';
       const url = `https://cdn.discordapp.com/emojis/${id}.${ext}?size=48&quality=lossless`;
-      
+
       segments.push(
         <img
           key={`emoji-${pos}`}
@@ -269,7 +282,11 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     // Bold
     const boldMatch = remaining.match(/^\*\*([^*]+?)\*\*/);
     if (boldMatch) {
-      segments.push(<strong key={pos} className="font-bold text-white">{parseInlineMarkdown(boldMatch[1])}</strong>);
+      segments.push(
+        <strong key={pos} className="font-bold text-white">
+          {parseInlineMarkdown(boldMatch[1])}
+        </strong>
+      );
       pos += boldMatch[0].length;
       continue;
     }
@@ -277,7 +294,11 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     // Underline
     const underlineMatch = remaining.match(/^__([^_]+?)__/);
     if (underlineMatch) {
-      segments.push(<u key={pos} className="underline">{parseInlineMarkdown(underlineMatch[1])}</u>);
+      segments.push(
+        <u key={pos} className="underline">
+          {parseInlineMarkdown(underlineMatch[1])}
+        </u>
+      );
       pos += underlineMatch[0].length;
       continue;
     }
@@ -285,7 +306,11 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     // Italic
     const italicMatch = remaining.match(/^(\*|_)([^*_]+?)\1/);
     if (italicMatch) {
-      segments.push(<em key={pos} className="italic">{parseInlineMarkdown(italicMatch[2])}</em>);
+      segments.push(
+        <em key={pos} className="italic">
+          {parseInlineMarkdown(italicMatch[2])}
+        </em>
+      );
       pos += italicMatch[0].length;
       continue;
     }
@@ -293,7 +318,11 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     // Strikethrough
     const strikethroughMatch = remaining.match(/^~~([^~]+?)~~/);
     if (strikethroughMatch) {
-      segments.push(<s key={pos} className="line-through text-[#949ba4]">{parseInlineMarkdown(strikethroughMatch[1])}</s>);
+      segments.push(
+        <s key={pos} className="line-through text-[#949ba4]">
+          {parseInlineMarkdown(strikethroughMatch[1])}
+        </s>
+      );
       pos += strikethroughMatch[0].length;
       continue;
     }
@@ -302,7 +331,10 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     const codeMatch = remaining.match(/^`([^`]+?)`/);
     if (codeMatch) {
       segments.push(
-        <code key={pos} className="bg-[#1e1f22] px-1 py-0.5 rounded text-[14px] font-mono text-[#e3e5e8]">
+        <code
+          key={pos}
+          className="bg-[#1e1f22] px-1 py-0.5 rounded text-[14px] font-mono text-[#e3e5e8]"
+        >
           {codeMatch[1]}
         </code>
       );
@@ -342,7 +374,10 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     const userMention = remaining.match(/^<@!?(\d+)>/);
     if (userMention) {
       segments.push(
-        <span key={pos} className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer">
+        <span
+          key={pos}
+          className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer"
+        >
           @{userMention[1]}
         </span>
       );
@@ -353,7 +388,10 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     const roleMention = remaining.match(/^<@&(\d+)>/);
     if (roleMention) {
       segments.push(
-        <span key={pos} className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer">
+        <span
+          key={pos}
+          className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer"
+        >
           @role-{roleMention[1]}
         </span>
       );
@@ -364,7 +402,10 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     const channelMention = remaining.match(/^<#(\d+)>/);
     if (channelMention) {
       segments.push(
-        <span key={pos} className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer">
+        <span
+          key={pos}
+          className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer"
+        >
           #channel-{channelMention[1]}
         </span>
       );
@@ -376,14 +417,20 @@ function parseInlineMarkdown(text: string): React.ReactNode {
     const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
     if (linkMatch) {
       segments.push(
-        <a key={pos} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-[#00a8fc] hover:underline">
+        <a
+          key={pos}
+          href={linkMatch[2]}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-[#00a8fc] hover:underline"
+        >
           {linkMatch[1]}
         </a>
       );
       pos += linkMatch[0].length;
       continue;
     }
-    
+
     // Fallback to plain text
     segments.push(<span key={pos}>{remaining[0]}</span>);
     pos += 1;
@@ -391,7 +438,6 @@ function parseInlineMarkdown(text: string): React.ReactNode {
 
   return <>{segments}</>;
 }
-
 
 function formatDate(timestamp: string) {
   const date = new Date(timestamp);
@@ -534,7 +580,7 @@ const Input: React.FC<React.InputHTMLAttributes<HTMLInputElement>> = ({
   ...props
 }) => (
   <input
-    className={`bg-gray-800/80 border border-gray-600/50 rounded-lg px-4 py-2.5 text-sm text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all ${className}`}
+    className={`glass rounded-lg px-4 py-2.5 text-sm text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 transition-all ${className}`}
     {...props}
   />
 );
@@ -544,7 +590,7 @@ const TextArea: React.FC<React.TextareaHTMLAttributes<HTMLTextAreaElement>> = ({
   ...props
 }) => (
   <textarea
-    className={`bg-gray-800/80 border border-gray-600/50 rounded-lg px-4 py-2.5 text-sm text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 resize-none min-h-[60px] transition-all ${className}`}
+    className={`glass rounded-lg px-4 py-2.5 text-sm text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/40 resize-none min-h-[60px] transition-all ${className}`}
     {...props}
   />
 );
@@ -555,7 +601,7 @@ const Card: React.FC<{ children: React.ReactNode; className?: string; interactiv
   interactive = false,
 }) => (
   <div
-    className={`bg-gray-800/60 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 shadow-lg ${interactive ? 'hover:bg-gray-800/80 hover:border-gray-600/50 transition-all duration-200' : ''} ${className}`}
+    className={`glass rounded-xl p-6 ${interactive ? 'glass-hover transition-all duration-200' : ''} ${className}`}
   >
     {children}
   </div>
@@ -568,7 +614,7 @@ const MessageEmbed: React.FC<{ embed: Embed }> = ({ embed }) => {
 
   return (
     <div
-      className="bg-gray-800/60 border-l-4 rounded-lg p-4 my-2 max-w-lg"
+      className="glass-light border-l-4 rounded-lg p-4 my-2 max-w-lg"
       style={{ borderLeftColor: borderColor }}
     >
       {embed.author && (
@@ -593,7 +639,9 @@ const MessageEmbed: React.FC<{ embed: Embed }> = ({ embed }) => {
       )}
 
       {embed.description && (
-        <div className="text-sm text-gray-300 whitespace-pre-wrap mb-3">{parseDiscordMarkdown(embed.description)}</div>
+        <div className="text-sm text-gray-300 whitespace-pre-wrap mb-3">
+          {parseDiscordMarkdown(embed.description)}
+        </div>
       )}
 
       {embed.fields && embed.fields.length > 0 && (
@@ -603,7 +651,9 @@ const MessageEmbed: React.FC<{ embed: Embed }> = ({ embed }) => {
           {embed.fields.map((field, i) => (
             <div key={i} className={field.inline ? 'col-span-1' : 'col-span-2'}>
               <div className="text-sm font-semibold text-gray-200 mb-1">{field.name}</div>
-              <div className="text-sm text-gray-400 whitespace-pre-wrap">{parseDiscordMarkdown(field.value)}</div>
+              <div className="text-sm text-gray-400 whitespace-pre-wrap">
+                {parseDiscordMarkdown(field.value)}
+              </div>
             </div>
           ))}
         </div>
@@ -677,7 +727,10 @@ const MessageAttachment: React.FC<{ attachment: Attachment }> = ({ attachment })
   );
 };
 
-const MessageReaction: React.FC<{ reaction: Reaction; onAddReaction?: () => void }> = ({ reaction, onAddReaction }) => {
+const MessageReaction: React.FC<{ reaction: Reaction; onAddReaction?: () => void }> = ({
+  reaction,
+  onAddReaction,
+}) => {
   return (
     <button
       onClick={onAddReaction}
@@ -701,7 +754,15 @@ const MessageComponent: React.FC<{
   onUserClick?: (user: User) => void;
   showHeader?: boolean;
   onAddReaction?: (messageId: string, emoji: string) => void;
-}> = ({ message, currentUser, onEdit, onDelete, onUserClick, showHeader = true, onAddReaction }) => {
+}> = ({
+  message,
+  currentUser,
+  onEdit,
+  onDelete,
+  onUserClick,
+  showHeader = true,
+  onAddReaction,
+}) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editContent, setEditContent] = useState(message.content);
   const [showMenu, setShowMenu] = useState(false);
@@ -774,7 +835,10 @@ const MessageComponent: React.FC<{
                 Bot
               </span>
             )}
-            <span className="text-xs text-[#949ba4] font-medium" title={formatFullDate(message.timestamp)}>
+            <span
+              className="text-xs text-[#949ba4] font-medium"
+              title={formatFullDate(message.timestamp)}
+            >
               {formatDate(message.timestamp)}
             </span>
             {message.edited_timestamp && (
@@ -867,15 +931,17 @@ const MessageComponent: React.FC<{
                 ref={reactionPickerRef}
                 className="absolute right-0 top-6 bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-xl p-2 grid grid-cols-6 gap-1 z-30"
               >
-                {['😀', '😂', '😍', '👍', '👎', '❤️', '🔥', '🎉', '🎊', '💯', '✨', '💪'].map((emoji) => (
-                  <button
-                    key={emoji}
-                    onClick={() => handleAddReaction(emoji)}
-                    className="w-8 h-8 hover:bg-[#35363c] rounded transition-colors text-xl"
-                  >
-                    {emoji}
-                  </button>
-                ))}
+                {['😀', '😂', '😍', '👍', '👎', '❤️', '🔥', '🎉', '🎊', '💯', '✨', '💪'].map(
+                  (emoji) => (
+                    <button
+                      key={emoji}
+                      onClick={() => handleAddReaction(emoji)}
+                      className="w-8 h-8 hover:bg-[#35363c] rounded transition-colors text-xl"
+                    >
+                      {emoji}
+                    </button>
+                  )
+                )}
               </div>
             )}
           </div>
@@ -950,7 +1016,9 @@ const Toast: React.FC<{
   };
 
   return (
-    <div className={`fixed bottom-4 right-4 ${bgColors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-slide-in z-50`}>
+    <div
+      className={`fixed bottom-4 right-4 ${bgColors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-3 animate-slide-in z-50`}
+    >
       {type === 'success' && (
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
           <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
@@ -1012,7 +1080,9 @@ const QuickSwitcher: React.FC<{
         <div className="flex-1 overflow-y-auto p-2">
           {searchQuery && filteredGuilds.length > 0 && (
             <div className="mb-2">
-              <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1">Servers</div>
+              <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1">
+                Servers
+              </div>
               {filteredGuilds.slice(0, 5).map((guild) => (
                 <button
                   key={guild.id}
@@ -1033,7 +1103,9 @@ const QuickSwitcher: React.FC<{
           )}
           {searchQuery && filteredChannels.length > 0 && (
             <div>
-              <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1">Channels</div>
+              <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1">
+                Channels
+              </div>
               {filteredChannels.slice(0, 5).map((channel) => (
                 <button
                   key={channel.id}
@@ -1070,8 +1142,14 @@ const UserSearchModal: React.FC<{
   const [query, setQuery] = useState('');
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col animate-scale-in" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-2xl max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-4 border-b border-[#1e1f22]">
           <h2 className="text-xl font-bold text-white mb-4">Search Users</h2>
           <input
@@ -1099,7 +1177,9 @@ const UserSearchModal: React.FC<{
                   <div className="text-sm text-[#949ba4]">@{user.username}</div>
                 </div>
                 {user.bot && (
-                  <span className="text-xs bg-[#5865f2] text-white px-2 py-1 rounded font-bold">BOT</span>
+                  <span className="text-xs bg-[#5865f2] text-white px-2 py-1 rounded font-bold">
+                    BOT
+                  </span>
                 )}
               </button>
             ))
@@ -1139,8 +1219,14 @@ const CreateServerModal: React.FC<{
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-2xl max-w-md w-full animate-scale-in" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-[#2b2d31] border border-[#1e1f22] rounded-lg shadow-2xl max-w-md w-full animate-scale-in"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-4">
           <h2 className="text-xl font-bold text-white mb-6">Create Server</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -1154,7 +1240,11 @@ const CreateServerModal: React.FC<{
                   {iconPreview ? (
                     <img src={iconPreview} alt="" className="w-full h-full object-cover" />
                   ) : (
-                    <svg className="w-10 h-10 text-[#949ba4]" fill="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      className="w-10 h-10 text-[#949ba4]"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path d="M19 13h-6v6h-2v-6h-2v-2h6v2zM7 9c-1.1 0-2 .9-2 2v2h-2c0 1.1.9 2 2s.9-2 2-2zm8 0c-1.1 0-2 .9-2 2v2h-2c0 1.1.9 2 2s.9-2 2-2zm5 11h-4v4h-2v-4H7v-2h4V7h2v4z" />
                     </svg>
                   )}
@@ -1172,7 +1262,10 @@ const CreateServerModal: React.FC<{
                 {icon && (
                   <button
                     type="button"
-                    onClick={() => { setIcon(null); setIconPreview(''); }}
+                    onClick={() => {
+                      setIcon(null);
+                      setIconPreview('');
+                    }}
                     className="text-[#f23f43] text-sm hover:underline"
                   >
                     Remove
@@ -1195,7 +1288,9 @@ const CreateServerModal: React.FC<{
             </div>
 
             <div className="flex gap-2">
-              <Button onClick={onClose} variant="secondary">Cancel</Button>
+              <Button onClick={onClose} variant="secondary">
+                Cancel
+              </Button>
               <Button type="submit" variant="primary" disabled={!name.trim()}>
                 Create Server
               </Button>
@@ -1214,13 +1309,69 @@ const EmojiPicker: React.FC<{
   onClose: () => void;
 }> = ({ onSelect, onClose }) => {
   const emojis = [
-    '😀', '😂', '😍', '🥰', '🎉', '🎊', '💯', '✨', '💪',
-    '❤️', '🧡', '💔', '👍', '👎�', '🔥', '⭐', '🌟', '💕',
-    '😎', '🤔', '😮', '🤯', '😅', '😢', '😡', '🤣', '🤬',
-    '👀', '👽', '🐱', '🌈', '🌍', '💻', '🎮', '🎨', '🎭',
-    '🍕', '🍔', '☕', '🍷', '🥤', '🍺', '🥝', '🍞', '🍰',
-    '⚽', '🏀', '🎸', '🎺', '🎻', '🎤', '🎧', '🏹', '🏈',
-    '🚗', '🚀', '🛸', '🌎', '🎱', '🎬', '📺', '📷', '📸',
+    '😀',
+    '😂',
+    '😍',
+    '🥰',
+    '🎉',
+    '🎊',
+    '💯',
+    '✨',
+    '💪',
+    '❤️',
+    '🧡',
+    '💔',
+    '👍',
+    '👎�',
+    '🔥',
+    '⭐',
+    '🌟',
+    '💕',
+    '😎',
+    '🤔',
+    '😮',
+    '🤯',
+    '😅',
+    '😢',
+    '😡',
+    '🤣',
+    '🤬',
+    '👀',
+    '👽',
+    '🐱',
+    '🌈',
+    '🌍',
+    '💻',
+    '🎮',
+    '🎨',
+    '🎭',
+    '🍕',
+    '🍔',
+    '☕',
+    '🍷',
+    '🥤',
+    '🍺',
+    '🥝',
+    '🍞',
+    '🍰',
+    '⚽',
+    '🏀',
+    '🎸',
+    '🎺',
+    '🎻',
+    '🎤',
+    '🎧',
+    '🏹',
+    '🏈',
+    '🚗',
+    '🚀',
+    '🛸',
+    '🌎',
+    '🎱',
+    '🎬',
+    '📺',
+    '📷',
+    '📸',
   ];
 
   return (
@@ -1257,29 +1408,36 @@ const MemberList: React.FC<{
   onUserClick: (user: User) => void;
 }> = ({ members, roles, selectedUser, onUserClick }) => {
   // Group members by highest role
-  const groupedMembers = members.reduce((acc, member) => {
-    if (member.user.id === selectedUser?.id) return acc; // Skip current user
+  const groupedMembers = members.reduce(
+    (acc, member) => {
+      if (member.user.id === selectedUser?.id) return acc; // Skip current user
 
-    const roleIds = member.roles;
-    let highestRole = roles.find((r) => r.id === roleIds[0]);
-    const roleName = highestRole?.name || 'Online';
+      const roleIds = member.roles;
+      let highestRole = roles.find((r) => r.id === roleIds[0]);
+      const roleName = highestRole?.name || 'Online';
 
-    if (!acc[roleName]) {
-      acc[roleName] = [];
-    }
-    acc[roleName].push(member);
-    return acc;
-  }, {} as Record<string, Member[]>);
+      if (!acc[roleName]) {
+        acc[roleName] = [];
+      }
+      acc[roleName].push(member);
+      return acc;
+    },
+    {} as Record<string, Member[]>
+  );
 
   return (
-    <div className="w-60 bg-[#2b2d31] flex flex-col">
-      <div className="h-12 px-4 flex items-center border-b border-[#1e1f22] shadow-sm">
-        <h2 className="font-semibold text-xs text-[#949ba4] uppercase">Members — {members.length}</h2>
+    <div className="w-60 glass-dark flex flex-col">
+      <div className="h-12 px-4 flex items-center border-b border-white/10">
+        <h2 className="font-semibold text-xs text-white/70 uppercase">
+          Members — {members.length}
+        </h2>
       </div>
       <div className="flex-1 overflow-y-auto p-2">
         {Object.entries(groupedMembers).map(([roleName, roleMembers]) => (
           <div key={roleName} className="mb-4">
-            <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1">{roleName}</div>
+            <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1">
+              {roleName}
+            </div>
             {roleMembers.map((member) => (
               <button
                 key={member.user.id}
@@ -1344,7 +1502,10 @@ export default function DiscordClient() {
   const [showChannelInfo, setShowChannelInfo] = useState(false);
   const [showQuickSwitcher, setShowQuickSwitcher] = useState(false);
   const [showMemberList, setShowMemberList] = useState(true);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: 'success' | 'error' | 'info';
+  } | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
 
@@ -1582,9 +1743,13 @@ export default function DiscordClient() {
   const handleAddReaction = async (messageId: string, emoji: string) => {
     if (!authToken || !selectedChannelId) return;
     try {
-      await authedFetch(authToken, `/channels/${selectedChannelId}/messages/${messageId}/reactions/${encodeURIComponent(emoji)}/@me`, {
-        method: 'PUT',
-      });
+      await authedFetch(
+        authToken,
+        `/channels/${selectedChannelId}/messages/${messageId}/reactions/${encodeURIComponent(emoji)}/@me`,
+        {
+          method: 'PUT',
+        }
+      );
       loadMessages();
     } catch (error) {
       console.error('Failed to add reaction:', error);
@@ -1620,8 +1785,11 @@ export default function DiscordClient() {
     if (!authToken || !query.trim()) return;
 
     try {
-      const data = await authedFetch<{ members: { user: User }[] }>(authToken, `/guilds/${selectedGuildId}/members/search?query=${encodeURIComponent(query)}&limit=5`);
-      const users = data.members?.map(m => m.user) || [];
+      const data = await authedFetch<{ members: { user: User }[] }>(
+        authToken,
+        `/guilds/${selectedGuildId}/members/search?query=${encodeURIComponent(query)}&limit=5`
+      );
+      const users = data.members?.map((m) => m.user) || [];
       setSearchedUsers(users);
     } catch (error) {
       console.error('Failed to search users:', error);
@@ -1674,7 +1842,7 @@ export default function DiscordClient() {
   };
 
   const handleReply = (messageId: string) => {
-    const message = messages.find(m => m.id === messageId);
+    const message = messages.find((m) => m.id === messageId);
     if (message) {
       setReplyingTo(messageId);
       setMessageInput(`> <@${message.author.username}> ${message.content.substring(0, 50)}...`);
@@ -1697,22 +1865,22 @@ export default function DiscordClient() {
   // Login Screen
   if (!authToken || !botUser) {
     return (
-      <div className="fixed inset-0 flex items-center justify-center p-6 bg-[#313338]">
-        <div className="w-full max-w-md bg-[#2b2d31] rounded-lg shadow-xl p-8">
+      <div className="fixed inset-0 flex items-center justify-center p-6">
+        <div className="w-full max-w-md glass-strong rounded-lg p-8">
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 rounded-full bg-[#5865f2] flex items-center justify-center text-4xl shadow-lg">
+            <div className="w-20 h-20 rounded-full glass-light flex items-center justify-center text-4xl">
               🤖
             </div>
           </div>
           <h1 className="text-2xl font-bold text-center mb-2 text-white">Welcome to BotClienty</h1>
-          <p className="text-[#b5bac1] text-center mb-6 text-sm">
+          <p className="text-white/80 text-center mb-6 text-sm">
             Discord Bot Web Client with DM Support
           </p>
 
           <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold mb-2 text-[#b5bac1] uppercase">
-                Bot Token <span className="text-[#f23f43]">*</span>
+              <label className="block text-xs font-bold mb-2 text-white/80 uppercase">
+                Bot Token <span className="text-red-400">*</span>
               </label>
               <input
                 type="password"
@@ -1720,13 +1888,13 @@ export default function DiscordClient() {
                 value={tokenInput}
                 onChange={(e) => setTokenInput(e.target.value)}
                 autoFocus
-                className="w-full bg-[#1e1f22] border border-[#1e1f22] rounded-[3px] px-3 py-2.5 text-[15px] text-[#dbdee1] placeholder-[#87898c] focus:outline-none focus:border-[#00a8fc] transition-colors"
+                className="w-full glass rounded-[3px] px-3 py-2.5 text-[15px] text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-colors"
               />
             </div>
 
             {authError && (
-              <div className="bg-[#f23f43]/10 border border-[#f23f43] p-3 rounded-[3px]">
-                <p className="text-[#f23f43] text-sm flex items-center gap-2">
+              <div className="glass-light border border-red-400/50 p-3 rounded-[3px]">
+                <p className="text-red-300 text-sm flex items-center gap-2">
                   <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
                   </svg>
@@ -1738,7 +1906,7 @@ export default function DiscordClient() {
             <button
               type="submit"
               disabled={isAuthenticating}
-              className="w-full bg-[#5865f2] hover:bg-[#4752c4] text-white font-medium py-2.5 rounded-[3px] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full glass-strong text-white font-medium py-2.5 rounded-[3px] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isAuthenticating ? (
                 <span className="flex items-center justify-center gap-2">
@@ -1755,37 +1923,61 @@ export default function DiscordClient() {
             <p className="text-xs text-[#949ba4] mb-3 font-medium">FEATURES</p>
             <div className="space-y-2 text-sm text-[#b5bac1]">
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 text-[#23a559] flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
                 View all servers and channels
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 text-[#23a559] flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
                 Send and receive messages
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 text-[#23a559] flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
                 Direct message support
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 text-[#23a559] flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
                 Rich embeds and attachments
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 text-[#23a559] flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
                 Message reactions
               </div>
               <div className="flex items-center gap-2">
-                <svg className="w-4 h-4 text-[#23a559] flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <svg
+                  className="w-4 h-4 text-[#23a559] flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
                   <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                 </svg>
                 Server member list
@@ -1796,13 +1988,17 @@ export default function DiscordClient() {
               <p className="text-xs text-[#949ba4] mb-3 font-medium">KEYBOARD SHORTCUTS</p>
               <div className="space-y-1.5 text-xs text-[#b5bac1]">
                 <div className="flex items-center gap-2">
-                  <kbd className="bg-[#1e1f22] px-1.5 py-0.5 rounded text-[10px] font-mono">Ctrl</kbd>
+                  <kbd className="bg-[#1e1f22] px-1.5 py-0.5 rounded text-[10px] font-mono">
+                    Ctrl
+                  </kbd>
                   <span>+</span>
                   <kbd className="bg-[#1e1f22] px-1.5 py-0.5 rounded text-[10px] font-mono">K</kbd>
                   <span className="text-[#949ba4]">Quick switcher</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <kbd className="bg-[#1e1f22] px-1.5 py-0.5 rounded text-[10px] font-mono">Esc</kbd>
+                  <kbd className="bg-[#1e1f22] px-1.5 py-0.5 rounded text-[10px] font-mono">
+                    Esc
+                  </kbd>
                   <span className="text-[#949ba4]">Close modals</span>
                 </div>
               </div>
@@ -1822,41 +2018,45 @@ export default function DiscordClient() {
   const categories = channels.filter((c) => c.type === 4);
 
   // Group messages by same author
-  const groupedMessages: Array<Message & { showHeader: boolean }> = messages.reduce((acc, message, index) => {
-    const prevMessage = messages[index - 1];
-    const showHeader =
-      !prevMessage ||
-      prevMessage.author.id !== message.author.id ||
-      new Date(message.timestamp).getTime() - new Date(prevMessage.timestamp).getTime() > 5 * 60 * 1000;
+  const groupedMessages: Array<Message & { showHeader: boolean }> = messages.reduce(
+    (acc, message, index) => {
+      const prevMessage = messages[index - 1];
+      const showHeader =
+        !prevMessage ||
+        prevMessage.author.id !== message.author.id ||
+        new Date(message.timestamp).getTime() - new Date(prevMessage.timestamp).getTime() >
+          5 * 60 * 1000;
 
-    acc.push({ ...message, showHeader });
-    return acc;
-  }, [] as Array<Message & { showHeader: boolean }>);
+      acc.push({ ...message, showHeader });
+      return acc;
+    },
+    [] as Array<Message & { showHeader: boolean }>
+  );
 
   // Main app return
   return (
-    <div className="flex h-screen bg-gray-900 text-gray-100">
+    <div className="flex h-screen text-white">
       {/* Server Sidebar */}
-      <nav className="w-[72px] bg-[#1e1f22] flex flex-col items-center py-3 gap-2 overflow-y-auto">
+      <nav className="w-[72px] glass-dark flex flex-col items-center py-3 gap-2 overflow-y-auto">
         <button
-           onClick={() => {
-             setIsDMView(true);
-             setSelectedGuildId(null);
-             setSelectedChannelId(null);
-             setMessages([]);
-           }}
-           className={`group relative w-12 h-12 rounded-[24px] bg-[#313338] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2] ${
-             isDMView ? 'rounded-[16px] bg-[#5865f2]' : ''
-           }`}
-           title="Direct Messages"
+          onClick={() => {
+            setIsDMView(true);
+            setSelectedGuildId(null);
+            setSelectedChannelId(null);
+            setMessages([]);
+          }}
+          className={`group relative w-12 h-12 rounded-[24px] bg-[#313338] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2] ${
+            isDMView ? 'rounded-[16px] bg-[#5865f2]' : ''
+          }`}
+          title="Direct Messages"
         >
           <svg
-             className={`w-6 h-6 transition-colors ${isDMView ? 'text-white' : 'text-[#b5bac1] group-hover:text-white'}`}
-             fill="currentColor"
-             viewBox="0 0 24 24"
+            className={`w-6 h-6 transition-colors ${isDMView ? 'text-white' : 'text-[#b5bac1] group-hover:text-white'}`}
+            fill="currentColor"
+            viewBox="0 0 24 24"
           >
-             <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" />
-             <path d="M8.5 12.5c.828 0 1.5-.672 1.5-1.5S9.328 9.5 8.5 9.5 7 10.172 7 11s.672 1.5 1.5 1.5zm7 0c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5S14 10.172 14 11s.672 1.5 1.5 1.5zm-3.5 4c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.05 2.79 3.5 5.12 3.5z" />
+            <path d="M12 2C6.486 2 2 6.486 2 12s4.486 10 10 10 10-4.486 10-10S17.514 2 12 2zm0 18c-4.411 0-8-3.589-8-8s3.589-8 8-8 8 3.589 8 8-3.589 8-8 8z" />
+            <path d="M8.5 12.5c.828 0 1.5-.672 1.5-1.5S9.328 9.5 8.5 9.5 7 10.172 7 11s.672 1.5 1.5 1.5zm7 0c.828 0 1.5-.672 1.5-1.5s-.672-1.5-1.5-1.5S14 10.172 14 11s.672 1.5 1.5 1.5zm-3.5 4c2.33 0 4.32-1.45 5.12-3.5H6.88c.8 2.05 2.79 3.5 5.12 3.5z" />
           </svg>
           {isDMView && (
             <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full -ml-[3px]" />
@@ -1874,7 +2074,7 @@ export default function DiscordClient() {
             }
           }}
           className="group relative w-12 h-12 rounded-[24px] bg-[#23a559] flex items-center justify-center transition-all duration-200 hover:rounded-[16px] hover:bg-[#5865f2]"
-          title={selectedGuildId ? "Search Users" : "Create Server"}
+          title={selectedGuildId ? 'Search Users' : 'Create Server'}
         >
           <svg
             className="w-6 h-6 text-white group-hover:scale-110 transition-transform"
@@ -1938,8 +2138,8 @@ export default function DiscordClient() {
       </nav>
 
       {/* Channel Sidebar */}
-      <aside className="w-60 bg-[#2b2d31] flex flex-col">
-        <header className="h-12 px-4 flex items-center border-b border-[#1e1f22] shadow-sm">
+      <aside className="w-60 glass-dark flex flex-col">
+        <header className="h-12 px-4 flex items-center border-b border-white/10">
           <h2 className="font-semibold text-base truncate text-white">
             {isDMView ? 'Direct Messages' : selectedGuild?.name || 'BotClienty'}
           </h2>
@@ -1995,18 +2195,27 @@ export default function DiscordClient() {
             </>
           ) : (
             <>
-                            {/* Group channels by category */}
+              {/* Group channels by category */}
               {categories.map((category) => {
-                const categoryChannels = channels.filter((c) => c.parent_id === category.id && c.type !== 4);
+                const categoryChannels = channels.filter(
+                  (c) => c.parent_id === category.id && c.type !== 4
+                );
                 if (categoryChannels.length === 0) return null;
 
                 const textChannelsInCategory = categoryChannels.filter((c) => c.type === 0);
                 const voiceChannelsInCategory = categoryChannels.filter((c) => c.type === 2);
 
                 return (
-                  <div key={category.id} className="mb-4 bg-[#2e3035]/20 rounded-lg overflow-hidden border border-[#1e1f22]/30 shadow-sm mx-1">
+                  <div
+                    key={category.id}
+                    className="mb-4 bg-[#2e3035]/20 rounded-lg overflow-hidden border border-[#1e1f22]/30 shadow-sm mx-1"
+                  >
                     <div className="text-[11px] font-bold text-[#949ba4] uppercase px-2 py-1.5 flex items-center gap-1 cursor-pointer hover:text-[#dbdee1] transition-colors bg-[#1e1f22]/20">
-                      <svg className="w-3 h-3 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                      <svg
+                        className="w-3 h-3 transition-transform"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                      >
                         <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
                       </svg>
                       <span className="tracking-wider">{category.name}</span>
@@ -2023,7 +2232,9 @@ export default function DiscordClient() {
                           }`}
                         >
                           <span className="text-[#80848e] font-light text-lg">#</span>
-                          <span className="text-[14px] font-medium truncate flex-1">{channel.name}</span>
+                          <span className="text-[14px] font-medium truncate flex-1">
+                            {channel.name}
+                          </span>
                           {channel.nsfw && (
                             <span className="text-[9px] bg-[#f23f43] text-white px-1 py-0.5 rounded font-bold">
                               NSFW
@@ -2050,7 +2261,11 @@ export default function DiscordClient() {
                 const uncategorizedTextChannels = textChannels.filter((c) => !c.parent_id);
                 const uncategorizedVoiceChannels = voiceChannels.filter((c) => !c.parent_id);
 
-                if (uncategorizedTextChannels.length === 0 && uncategorizedVoiceChannels.length === 0) return null;
+                if (
+                  uncategorizedTextChannels.length === 0 &&
+                  uncategorizedVoiceChannels.length === 0
+                )
+                  return null;
 
                 return (
                   <div className="mb-4 bg-[#2e3035]/20 rounded-lg overflow-hidden border border-[#1e1f22]/30 shadow-sm mx-1">
@@ -2066,7 +2281,9 @@ export default function DiscordClient() {
                           }`}
                         >
                           <span className="text-[#80848e] font-light text-lg">#</span>
-                          <span className="text-[14px] font-medium truncate flex-1">{channel.name}</span>
+                          <span className="text-[14px] font-medium truncate flex-1">
+                            {channel.name}
+                          </span>
                           {channel.nsfw && (
                             <span className="text-[9px] bg-[#f23f43] text-white px-1 py-0.5 rounded font-bold">
                               NSFW
@@ -2087,8 +2304,6 @@ export default function DiscordClient() {
                   </div>
                 );
               })()}
-
-
             </>
           )}
           {channels.filter((c) => c.type === 0).length === 0 && !isLoading && !isDMView && (
@@ -2119,8 +2334,18 @@ export default function DiscordClient() {
               className="flex-shrink-0 p-1 hover:bg-[#4e505899] rounded transition-colors"
               title="Logout"
             >
-              <svg className="w-5 h-5 text-[#b5bac1]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              <svg
+                className="w-5 h-5 text-[#b5bac1]"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
               </svg>
             </button>
           </div>
@@ -2128,9 +2353,9 @@ export default function DiscordClient() {
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col bg-[#313338]">
+      <main className="flex-1 flex flex-col glass">
         {/* Chat Header */}
-        <header className="h-12 px-4 flex items-center border-b border-[#1e1f22] shadow-sm">
+        <header className="h-12 px-4 flex items-center border-b border-white/10">
           <div className="flex items-center gap-2 flex-1">
             {selectedChannel && (
               <>
@@ -2147,7 +2372,8 @@ export default function DiscordClient() {
                           <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-[#23a559] border-[2px] border-[#313338] rounded-full" />
                         </div>
                         <h1 className="text-base font-semibold text-white">
-                          {selectedChannel.recipients[0].global_name || selectedChannel.recipients[0].username}
+                          {selectedChannel.recipients[0].global_name ||
+                            selectedChannel.recipients[0].username}
                         </h1>
                       </>
                     )}
@@ -2157,9 +2383,7 @@ export default function DiscordClient() {
                     <span className="text-[#80848e] text-xl">
                       {getChannelTypeIcon(selectedChannel.type)}
                     </span>
-                    <h1 className="text-base font-semibold text-white">
-                      {selectedChannel.name}
-                    </h1>
+                    <h1 className="text-base font-semibold text-white">{selectedChannel.name}</h1>
                     {selectedChannel.nsfw && (
                       <span className="text-[10px] bg-[#f23f43] text-white px-1.5 py-0.5 rounded font-bold">
                         NSFW
@@ -2258,9 +2482,18 @@ export default function DiscordClient() {
             <div className="mb-2 px-4 py-1">
               <span className="text-xs text-[#b5bac1] flex items-center gap-1">
                 <span className="flex items-center gap-0.5">
-                  <span className="w-1.5 h-1.5 bg-[#b5bac1] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                  <span className="w-1.5 h-1.5 bg-[#b5bac1] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                  <span className="w-1.5 h-1.5 bg-[#b5bac1] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                  <span
+                    className="w-1.5 h-1.5 bg-[#b5bac1] rounded-full animate-bounce"
+                    style={{ animationDelay: '0ms' }}
+                  />
+                  <span
+                    className="w-1.5 h-1.5 bg-[#b5bac1] rounded-full animate-bounce"
+                    style={{ animationDelay: '150ms' }}
+                  />
+                  <span
+                    className="w-1.5 h-1.5 bg-[#b5bac1] rounded-full animate-bounce"
+                    style={{ animationDelay: '300ms' }}
+                  />
                 </span>
                 <span>
                   {typingUsers.length === 1
@@ -2455,13 +2688,13 @@ export default function DiscordClient() {
           onClose={() => setShowCreateServer(false)}
           onCreate={async (name, icon) => {
             if (!authToken || !name.trim()) return;
-            
+
             try {
               const data = await authedFetch<Guild>(authToken, '/guilds', {
                 method: 'POST',
                 body: JSON.stringify({ name: name.trim() }),
               });
-              
+
               setGuilds([...guilds, data]);
               setShowCreateServer(false);
               setToast({ message: 'Server created!', type: 'success' });
@@ -2558,13 +2791,7 @@ export default function DiscordClient() {
       )}
 
       {/* Toast Notification */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
-      )}
+      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   );
 }
