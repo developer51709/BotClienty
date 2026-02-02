@@ -1811,7 +1811,6 @@ export default function DiscordClient() {
         </div>
       </div>
     );
-  }
 
   const selectedGuild = guilds.find((g) => g.id === selectedGuildId);
   const selectedChannel = isDMView
@@ -1822,7 +1821,7 @@ export default function DiscordClient() {
   const categories = channels.filter((c) => c.type === 4);
 
   // Group messages by same author
-  const groupedMessages = messages.reduce((acc, message, index) => {
+  const groupedMessages: Array<Message & { showHeader: boolean }> = messages.reduce((acc, message, index) => {
     const prevMessage = messages[index - 1];
     const showHeader =
       !prevMessage ||
@@ -1831,8 +1830,9 @@ export default function DiscordClient() {
 
     acc.push({ ...message, showHeader });
     return acc;
-  }, [] as Array<Message & { showHeader: boolean }>);
+  }, []);
 
+  // Main app return
   return (
     <div className="flex h-screen bg-gray-900 text-gray-100">
       {/* Server Sidebar */}
