@@ -1,3 +1,8 @@
+---
+name:Multi-Agent
+description:Auto Chooses multiple agents to use when coding.
+---
+
 # BotClienty Agent System
 
 This repository uses a multi-agent system to handle different types of development tasks efficiently.
