@@ -125,250 +125,273 @@ function formatUser(user: User) {
   return user.discriminator === '0' ? display : `${display}#${user.discriminator}`;
 }
 
-function escapeHtml(text: string): string {
+function decodeHtmlEntities(text: string): string {
   const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#039;': "'",
+    '&apos;': "'",
   };
-  return text.replace(/[&<>"']/g, (m) => map[m]);
+  return text.replace(/&amp;|&lt;|&gt;|&quot;|&#039;|&apos;/g, (m) => map[m]);
 }
 
 function parseDiscordMarkdown(content: string): React.ReactNode {
-  const segments: React.ReactNode[] = [];
-  let currentText = content;
-  let pos = 0;
+  if (!content) return null;
+  
+  // 1. Decode entities
+  let text = decodeHtmlEntities(content);
 
-  // Escape HTML first
-  currentText = escapeHtml(currentText);
+  // 2. Split by lines to handle block elements
+  const lines = text.split('\n');
+  const result: React.ReactNode[] = [];
+  
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i];
 
-  // Parse code blocks (```)
-  while (pos < currentText.length) {
-    const codeBlockStart = currentText.indexOf('```', pos);
-    if (codeBlockStart === -1) {
-      // No more code blocks, add remaining text and continue parsing inline markdown
-      const remainingText = currentText.slice(pos);
-      segments.push(parseInlineMarkdown(remainingText));
-      break;
-    }
-
-    // Add text before code block
-    if (codeBlockStart > pos) {
-      segments.push(parseInlineMarkdown(currentText.slice(pos, codeBlockStart)));
-    }
-
-    const codeBlockEnd = currentText.indexOf('```', codeBlockStart + 3);
-    if (codeBlockEnd === -1) {
-      // Unclosed code block, treat rest as code
-      segments.push(
-        <code className="block bg-gray-900/80 p-4 rounded-lg text-sm font-mono overflow-x-auto my-2 border border-gray-700/50">
-          {currentText.slice(codeBlockStart + 3)}
-        </code>
-      );
-      break;
-    }
-
-    // Extract language (if any)
-    let codeContent = currentText.slice(codeBlockStart + 3, codeBlockEnd);
-    let language = '';
-    const firstLineEnd = codeContent.indexOf('\n');
-    if (firstLineEnd !== -1) {
-      const possibleLang = codeContent.slice(0, firstLineEnd).trim();
-      if (possibleLang && !possibleLang.includes(' ')) {
-        language = possibleLang;
-        codeContent = codeContent.slice(firstLineEnd + 1);
+    // Code blocks
+    if (line.trim().startsWith('```')) {
+      const lang = line.trim().slice(3).trim();
+      let codeContent = '';
+      i++;
+      while (i < lines.length && !lines[i].trim().startsWith('```')) {
+        codeContent += (codeContent ? '\n' : '') + lines[i];
+        i++;
       }
+      result.push(
+        <div key={`cb-${i}`} className="my-2">
+          {lang && (
+            <div className="text-xs text-[#949ba4] mb-1 font-mono px-1">{lang}</div>
+          )}
+          <code className="block bg-[#1e1f22] p-4 rounded-lg text-sm font-mono overflow-x-auto border border-[#1e1f22]">
+            {codeContent}
+          </code>
+        </div>
+      );
+      i++;
+      continue;
     }
 
-    segments.push(
-      <div className="my-2">
-        {language && (
-          <div className="text-xs text-gray-500 mb-1 font-mono px-1">{language}</div>
-        )}
-        <code className="block bg-gray-900/80 p-4 rounded-lg text-sm font-mono overflow-x-auto border border-gray-700/50">
-          {codeContent}
-        </code>
-      </div>
-    );
+    // Headers
+    const headerMatch = line.match(/^(#{1,3})\s+(.+)$/);
+    if (headerMatch) {
+      const level = headerMatch[1].length;
+      const title = headerMatch[2];
+      const classes = [
+        '',
+        'text-2xl font-bold mt-4 mb-2 border-b border-[#3f4147] pb-1',
+        'text-xl font-bold mt-3 mb-1',
+        'text-lg font-bold mt-2 mb-1'
+      ][level];
+      const Tag = (level === 1 ? 'h1' : level === 2 ? 'h2' : 'h3') as any;
+      result.push(<Tag key={`h-${i}`} className={`${classes} text-white`}>{parseInlineMarkdown(title)}</Tag>);
+      i++;
+      continue;
+    }
 
-    pos = codeBlockEnd + 3;
+    // Blockquotes
+    if (line.startsWith('> ')) {
+      let quoteLines = [line.slice(2)];
+      i++;
+      while (i < lines.length && lines[i].startsWith('> ')) {
+        quoteLines.push(lines[i].slice(2));
+        i++;
+      }
+      result.push(
+        <blockquote key={`bq-${i}`} className="border-l-4 border-[#4e5058] pl-4 my-1 text-[#dbdee1] italic bg-[#35363c]/30 py-1 rounded-r">
+          {quoteLines.map((ql, idx) => (
+            <div key={idx}>{parseInlineMarkdown(ql)}</div>
+          ))}
+        </blockquote>
+      );
+      continue;
+    }
+
+    // List items
+    const listMatch = line.match(/^(\s*)([-*]|\d+\.)\s+(.+)$/);
+    if (listMatch) {
+      const indent = listMatch[1].length;
+      const content = listMatch[3];
+      result.push(
+        <div key={`li-${i}`} className="flex gap-2 my-0.5" style={{ marginLeft: `${indent * 0.5 + 1}rem` }}>
+          <span className="text-[#949ba4] mt-1.5 w-1.5 h-1.5 rounded-full bg-[#949ba4] flex-shrink-0" />
+          <span className="text-[#dbdee1]">{parseInlineMarkdown(content)}</span>
+        </div>
+      );
+      i++;
+      continue;
+    }
+
+    // Regular line
+    if (line.trim() === '') {
+      result.push(<div key={`br-${i}`} className="h-2" />);
+    } else {
+      result.push(<div key={`p-${i}`} className="min-h-[1.375rem]">{parseInlineMarkdown(line)}</div>);
+    }
+    i++;
   }
 
-  return <>{segments}</>;
+  return <>{result}</>;
 }
 
 function parseInlineMarkdown(text: string): React.ReactNode {
+  if (!text) return null;
   const segments: React.ReactNode[] = [];
-  let currentText = text;
   let pos = 0;
 
-  while (pos < currentText.length) {
-    // Find next markdown token
-    const boldMatch = currentText.slice(pos).match(/^\*\*([^*]+?)\*\*/);
-    const italicMatch = currentText.slice(pos).match(/^(\*|_)([^*_]+?)\1/);
-    const underlineMatch = currentText.slice(pos).match(/^__([^_]+?)__/);
-    const strikethroughMatch = currentText.slice(pos).match(/^~~([^~]+?)~~/);
-    const codeMatch = currentText.slice(pos).match(/^`([^`]+?)`/);
-    const spoilerMatch = currentText.slice(pos).match(/^\|\|([^|]+?)\|\|/);
-    const linkMatch = currentText.slice(pos).match(/^\[([^\]]+)\]\(([^)]+)\)/);
+  while (pos < text.length) {
+    const remaining = text.slice(pos);
 
-    const matches = [
-      { type: 'bold', match: boldMatch },
-      { type: 'italic', match: italicMatch },
-      { type: 'underline', match: underlineMatch },
-      { type: 'strikethrough', match: strikethroughMatch },
-      { type: 'code', match: codeMatch },
-      { type: 'spoiler', match: spoilerMatch },
-      { type: 'link', match: linkMatch },
-    ].filter((m) => m.match);
-
-    if (matches.length === 0) {
-      // No more markdown, add remaining text
-      const remaining = currentText.slice(pos);
-      if (remaining) {
-        segments.push(<span>{parseMentions(remaining)}</span>);
-      }
-      break;
+    // Custom Emoji: <a:name:id> or <:name:id>
+    const emojiMatch = remaining.match(/^<(a?):(\w+):(\d+)>/);
+    if (emojiMatch) {
+      const isAnimated = emojiMatch[1] === 'a';
+      const name = emojiMatch[2];
+      const id = emojiMatch[3];
+      const ext = isAnimated ? 'gif' : 'png';
+      const url = `https://cdn.discordapp.com/emojis/${id}.${ext}?size=48&quality=lossless`;
+      
+      segments.push(
+        <img
+          key={`emoji-${pos}`}
+          src={url}
+          alt={`:${name}:`}
+          title={`:${name}:`}
+          className="inline-block w-[22px] h-[22px] align-bottom mx-0.5"
+        />
+      );
+      pos += emojiMatch[0].length;
+      continue;
     }
 
-    // Sort by position
-    matches.sort((a, b) => {
-      const aPos = currentText.slice(pos).indexOf(a.match![0]);
-      const bPos = currentText.slice(pos).indexOf(b.match![0]);
-      return aPos - bPos;
-    });
-
-    const firstMatch = matches[0];
-    const fullMatch = firstMatch.match![0];
-    const matchPos = currentText.slice(pos).indexOf(fullMatch);
-
-    // Add text before match
-    if (matchPos > 0) {
-      const beforeText = currentText.slice(pos, pos + matchPos);
-      segments.push(<span>{parseMentions(beforeText)}</span>);
+    // Bold
+    const boldMatch = remaining.match(/^\*\*([^*]+?)\*\*/);
+    if (boldMatch) {
+      segments.push(<strong key={pos} className="font-bold text-white">{parseInlineMarkdown(boldMatch[1])}</strong>);
+      pos += boldMatch[0].length;
+      continue;
     }
 
-    // Process the matched markdown
-    const content = firstMatch.match![1] || firstMatch.match![2];
-    switch (firstMatch.type) {
-      case 'bold':
-        segments.push(<strong className="font-bold">{content}</strong>);
-        break;
-      case 'italic':
-        segments.push(<em className="italic">{content}</em>);
-        break;
-      case 'underline':
-        segments.push(<u className="underline">{content}</u>);
-        break;
-      case 'strikethrough':
-        segments.push(<s className="line-through">{content}</s>);
-        break;
-      case 'code':
-        segments.push(
-          <code className="bg-gray-700/60 px-1.5 py-0.5 rounded text-sm font-mono text-pink-300">
-            {content}
-          </code>
-        );
-        break;
-      case 'spoiler':
-        segments.push(
-          <span className="bg-gray-700/60 px-1.5 py-0.5 rounded cursor-pointer group relative inline-block">
-            <span className="invisible group-hover:visible">{content}</span>
-            <span className="absolute inset-0 bg-gray-700/80 flex items-center justify-center text-xs text-gray-400 group-hover:hidden">
-              SPOILER
-            </span>
+    // Underline
+    const underlineMatch = remaining.match(/^__([^_]+?)__/);
+    if (underlineMatch) {
+      segments.push(<u key={pos} className="underline">{parseInlineMarkdown(underlineMatch[1])}</u>);
+      pos += underlineMatch[0].length;
+      continue;
+    }
+
+    // Italic
+    const italicMatch = remaining.match(/^(\*|_)([^*_]+?)\1/);
+    if (italicMatch) {
+      segments.push(<em key={pos} className="italic">{parseInlineMarkdown(italicMatch[2])}</em>);
+      pos += italicMatch[0].length;
+      continue;
+    }
+
+    // Strikethrough
+    const strikethroughMatch = remaining.match(/^~~([^~]+?)~~/);
+    if (strikethroughMatch) {
+      segments.push(<s key={pos} className="line-through text-[#949ba4]">{parseInlineMarkdown(strikethroughMatch[1])}</s>);
+      pos += strikethroughMatch[0].length;
+      continue;
+    }
+
+    // Code
+    const codeMatch = remaining.match(/^`([^`]+?)`/);
+    if (codeMatch) {
+      segments.push(
+        <code key={pos} className="bg-[#1e1f22] px-1 py-0.5 rounded text-[14px] font-mono text-[#e3e5e8]">
+          {codeMatch[1]}
+        </code>
+      );
+      pos += codeMatch[0].length;
+      continue;
+    }
+
+    // Spoiler
+    const spoilerMatch = remaining.match(/^\|\|([^|]+?)\|\|/);
+    if (spoilerMatch) {
+      segments.push(
+        <span
+          key={pos}
+          className="bg-[#1e1f22] hover:bg-[#2b2d31] rounded px-1 cursor-pointer transition-colors group relative inline-block min-w-[20px]"
+          onClick={(e) => {
+            const target = e.currentTarget;
+            target.classList.remove('bg-[#1e1f22]');
+            const content = target.querySelector('.spoiler-content');
+            const hint = target.querySelector('.spoiler-hint');
+            if (content) content.classList.remove('opacity-0');
+            if (hint) hint.classList.add('hidden');
+          }}
+        >
+          <span className="spoiler-content opacity-0 transition-opacity duration-200">
+            {parseInlineMarkdown(spoilerMatch[1])}
           </span>
-        );
-        break;
-      case 'link':
-        segments.push(
-          <a href={content} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
-            {firstMatch.match![1]}
-          </a>
-        );
-        break;
+          <span className="spoiler-hint absolute inset-0 flex items-center justify-center text-[10px] font-bold text-[#b5bac1] uppercase tracking-wider">
+            Spoiler
+          </span>
+        </span>
+      );
+      pos += spoilerMatch[0].length;
+      continue;
     }
 
-    pos += matchPos + fullMatch.length;
+    // Mentions
+    const userMention = remaining.match(/^<@!?(\d+)>/);
+    if (userMention) {
+      segments.push(
+        <span key={pos} className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer">
+          @{userMention[1]}
+        </span>
+      );
+      pos += userMention[0].length;
+      continue;
+    }
+
+    const roleMention = remaining.match(/^<@&(\d+)>/);
+    if (roleMention) {
+      segments.push(
+        <span key={pos} className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer">
+          @role-{roleMention[1]}
+        </span>
+      );
+      pos += roleMention[0].length;
+      continue;
+    }
+
+    const channelMention = remaining.match(/^<#(\d+)>/);
+    if (channelMention) {
+      segments.push(
+        <span key={pos} className="bg-[#5865f2]/30 text-[#c9cdfb] px-1 rounded font-medium hover:bg-[#5865f2] hover:text-white transition-colors cursor-pointer">
+          #channel-{channelMention[1]}
+        </span>
+      );
+      pos += channelMention[0].length;
+      continue;
+    }
+
+    // Link
+    const linkMatch = remaining.match(/^\[([^\]]+)\]\(([^)]+)\)/);
+    if (linkMatch) {
+      segments.push(
+        <a key={pos} href={linkMatch[2]} target="_blank" rel="noopener noreferrer" className="text-[#00a8fc] hover:underline">
+          {linkMatch[1]}
+        </a>
+      );
+      pos += linkMatch[0].length;
+      continue;
+    }
+    
+    // Fallback to plain text
+    segments.push(<span key={pos}>{remaining[0]}</span>);
+    pos += 1;
   }
 
   return <>{segments}</>;
 }
 
-function parseMentions(text: string): React.ReactNode {
-  const segments: React.ReactNode[] = [];
-  let pos = 0;
-
-  // Match user mentions <@userid> or <@!userid>
-  const userMentionRegex = /<@!?(\d+)>/g;
-  // Match role mentions <@&roleid>
-  const roleMentionRegex = /<@&(\d+)>/g;
-  // Match channel mentions <#channelid>
-  const channelMentionRegex = /<#(\d+)>/g;
-
-  // Find all mention positions
-  const allMatches: { type: string; id: string; start: number; end: number }[] = [];
-
-  let match;
-  while ((match = userMentionRegex.exec(text)) !== null) {
-    allMatches.push({ type: 'user', id: match[1], start: match.index, end: match.index + match[0].length });
-  }
-  userMentionRegex.lastIndex = 0;
-
-  while ((match = roleMentionRegex.exec(text)) !== null) {
-    allMatches.push({ type: 'role', id: match[1], start: match.index, end: match.index + match[0].length });
-  }
-  roleMentionRegex.lastIndex = 0;
-
-  while ((match = channelMentionRegex.exec(text)) !== null) {
-    allMatches.push({ type: 'channel', id: match[1], start: match.index, end: match.index + match[0].length });
-  }
-  channelMentionRegex.lastIndex = 0;
-
-  // Sort by position
-  allMatches.sort((a, b) => a.start - b.start);
-
-  // Build segments
-  let lastIndex = 0;
-  allMatches.forEach((m) => {
-    // Add text before mention
-    if (m.start > lastIndex) {
-      segments.push(<span>{text.slice(lastIndex, m.start)}</span>);
-    }
-
-    // Add mention with styling
-    if (m.type === 'user') {
-      segments.push(
-        <span className="mention bg-blue-600/20 text-blue-400 px-1 py-0.5 rounded hover:bg-blue-600/30 transition-colors cursor-pointer">
-          @{m.id}
-        </span>
-      );
-    } else if (m.type === 'role') {
-      segments.push(
-        <span className="mention bg-purple-600/20 text-purple-400 px-1 py-0.5 rounded hover:bg-purple-600/30 transition-colors cursor-pointer">
-          @{m.id}
-        </span>
-      );
-    } else if (m.type === 'channel') {
-      segments.push(
-        <span className="mention bg-green-600/20 text-green-400 px-1 py-0.5 rounded hover:bg-green-600/30 transition-colors cursor-pointer">
-          #{m.id}
-        </span>
-      );
-    }
-
-    lastIndex = m.end;
-  });
-
-  // Add remaining text
-  if (lastIndex < text.length) {
-    segments.push(<span>{text.slice(lastIndex)}</span>);
-  }
-
-  return segments.length > 0 ? <>{segments}</> : text;
-}
 
 function formatDate(timestamp: string) {
   const date = new Date(timestamp);
@@ -2014,7 +2037,7 @@ export default function DiscordClient() {
             </>
           ) : (
             <>
-              {/* Group channels by category */}
+                            {/* Group channels by category */}
               {categories.map((category) => {
                 const categoryChannels = channels.filter((c) => c.parent_id === category.id && c.type !== 4);
                 if (categoryChannels.length === 0) return null;
@@ -2023,49 +2046,43 @@ export default function DiscordClient() {
                 const voiceChannelsInCategory = categoryChannels.filter((c) => c.type === 2);
 
                 return (
-                  <div key={category.id} className="mb-4">
-                    <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1 flex items-center gap-1 cursor-pointer hover:text-[#dbdee1]">
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <div key={category.id} className="mb-4 bg-[#2e3035]/20 rounded-lg overflow-hidden border border-[#1e1f22]/30 shadow-sm mx-1">
+                    <div className="text-[11px] font-bold text-[#949ba4] uppercase px-2 py-1.5 flex items-center gap-1 cursor-pointer hover:text-[#dbdee1] transition-colors bg-[#1e1f22]/20">
+                      <svg className="w-3 h-3 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z" />
                       </svg>
-                      <span>{category.name}</span>
+                      <span className="tracking-wider">{category.name}</span>
                     </div>
-                    {textChannelsInCategory.length > 0 && (
-                      <div className="space-y-[2px]">
-                        {textChannelsInCategory.map((channel) => (
-                          <button
-                            key={channel.id}
-                            onClick={() => setSelectedChannelId(channel.id)}
-                            className={`w-full text-left px-2 py-1.5 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-2 group ${
-                              selectedChannelId === channel.id
-                                ? 'bg-[#404249] text-white'
-                                : 'text-[#949ba4] hover:text-[#dbdee1]'
-                            }`}
-                          >
-                            <span className="text-xl">{getChannelTypeIcon(channel.type)}</span>
-                            <span className="text-[15px] font-medium truncate flex-1">{channel.name}</span>
-                            {channel.nsfw && (
-                              <span className="text-[10px] bg-[#f23f43] text-white px-1.5 py-0.5 rounded font-bold">
-                                NSFW
-                              </span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    {voiceChannelsInCategory.length > 0 && (
-                      <div className="mt-2 space-y-[2px]">
-                        {voiceChannelsInCategory.map((channel) => (
-                          <div
-                            key={channel.id}
-                            className="px-2 py-1.5 rounded text-[#949ba4] flex items-center gap-2 text-sm"
-                          >
-                            <span className="text-xl">{getChannelTypeIcon(channel.type)}</span>
-                            <span className="text-[15px] font-medium truncate">{channel.name}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    <div className="p-1 space-y-[1px]">
+                      {textChannelsInCategory.map((channel) => (
+                        <button
+                          key={channel.id}
+                          onClick={() => setSelectedChannelId(channel.id)}
+                          className={`w-full text-left px-2 py-1 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-2 group ${
+                            selectedChannelId === channel.id
+                              ? 'bg-[#404249] text-white'
+                              : 'text-[#949ba4] hover:text-[#dbdee1]'
+                          }`}
+                        >
+                          <span className="text-[#80848e] font-light text-lg">#</span>
+                          <span className="text-[14px] font-medium truncate flex-1">{channel.name}</span>
+                          {channel.nsfw && (
+                            <span className="text-[9px] bg-[#f23f43] text-white px-1 py-0.5 rounded font-bold">
+                              NSFW
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                      {voiceChannelsInCategory.map((channel) => (
+                        <button
+                          key={channel.id}
+                          className="w-full text-left px-2 py-1 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-2 text-[#949ba4] hover:text-[#dbdee1]"
+                        >
+                          <span className="text-[#80848e] text-lg">🔊</span>
+                          <span className="text-[14px] font-medium truncate">{channel.name}</span>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 );
               })}
@@ -2075,55 +2092,44 @@ export default function DiscordClient() {
                 const uncategorizedTextChannels = textChannels.filter((c) => !c.parent_id);
                 const uncategorizedVoiceChannels = voiceChannels.filter((c) => !c.parent_id);
 
+                if (uncategorizedTextChannels.length === 0 && uncategorizedVoiceChannels.length === 0) return null;
+
                 return (
-                  <>
-                    {uncategorizedTextChannels.length > 0 && (
-                      <div className="mb-4">
-                        <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1 flex items-center gap-1">
-                          <span>Text Channels</span>
-                        </div>
-                        {uncategorizedTextChannels.map((channel) => (
-                          <button
-                            key={channel.id}
-                            onClick={() => setSelectedChannelId(channel.id)}
-                            className={`w-full text-left px-2 py-1.5 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-2 group ${
-                              selectedChannelId === channel.id
-                                ? 'bg-[#404249] text-white'
-                                : 'text-[#949ba4] hover:text-[#dbdee1]'
-                            }`}
-                          >
-                            <span className="text-xl">{getChannelTypeIcon(channel.type)}</span>
-                            <span className="text-[15px] font-medium truncate flex-1">{channel.name}</span>
-                            {channel.nsfw && (
-                              <span className="text-[10px] bg-[#f23f43] text-white px-1.5 py-0.5 rounded font-bold">
-                                NSFW
-                              </span>
-                            )}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    {uncategorizedVoiceChannels.length > 0 && (
-                      <div className="mb-4">
-                        <div className="text-xs font-semibold text-[#949ba4] uppercase px-2 mb-1 flex items-center gap-1">
-                          <span>Voice Channels</span>
-                        </div>
-                        {uncategorizedVoiceChannels.map((channel) => (
-                          <div
-                            key={channel.id}
-                            className="px-2 py-1.5 rounded text-[#949ba4] flex items-center gap-2 text-sm"
-                          >
-                            <span className="text-xl">{getChannelTypeIcon(channel.type)}</span>
-                            <span className="text-[15px] font-medium truncate">{channel.name}</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </>
+                  <div className="mb-4 bg-[#2e3035]/20 rounded-lg overflow-hidden border border-[#1e1f22]/30 shadow-sm mx-1">
+                    <div className="p-1 space-y-[1px]">
+                      {uncategorizedTextChannels.map((channel) => (
+                        <button
+                          key={channel.id}
+                          onClick={() => setSelectedChannelId(channel.id)}
+                          className={`w-full text-left px-2 py-1 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-2 group ${
+                            selectedChannelId === channel.id
+                              ? 'bg-[#404249] text-white'
+                              : 'text-[#949ba4] hover:text-[#dbdee1]'
+                          }`}
+                        >
+                          <span className="text-[#80848e] font-light text-lg">#</span>
+                          <span className="text-[14px] font-medium truncate flex-1">{channel.name}</span>
+                          {channel.nsfw && (
+                            <span className="text-[9px] bg-[#f23f43] text-white px-1 py-0.5 rounded font-bold">
+                              NSFW
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                      {uncategorizedVoiceChannels.map((channel) => (
+                        <button
+                          key={channel.id}
+                          className="w-full text-left px-2 py-1 rounded-[4px] hover:bg-[#35363c] transition-colors flex items-center gap-2 text-[#949ba4] hover:text-[#dbdee1]"
+                        >
+                          <span className="text-[#80848e] text-lg">🔊</span>
+                          <span className="text-[14px] font-medium truncate">{channel.name}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 );
               })()}
-            </>
-          )}
+
 
           {channels.filter((c) => c.type === 0).length === 0 && !isLoading && !isDMView && (
             <p className="text-[#949ba4] text-sm px-2 py-4">No channels available</p>
