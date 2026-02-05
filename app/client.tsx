@@ -1494,6 +1494,7 @@ export default function DiscordClient() {
   const [messageInput, setMessageInput] = useState('');
 
   // UI state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -1520,11 +1521,47 @@ export default function DiscordClient() {
   const [searchedUsers, setSearchedUsers] = useState<User[]>([]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const lastMessageIdRef = useRef<string | null>(null);
 
   // Auto-scroll to bottom when new messages arrive
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Polling for new messages
+  useEffect(() => {
+    if (!authToken || !selectedChannelId) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const url = `/channels/${selectedChannelId}/messages?limit=10${lastMessageIdRef.current ? `&after=${lastMessageIdRef.current}` : ''}`;
+        const newMessages = await authedFetch<Message[]>(authToken, url);
+        if (newMessages && newMessages.length > 0) {
+          setMessages((prev) => {
+            const existingIds = new Set(prev.map((m) => m.id));
+            const uniqueNew = newMessages.filter((m) => !existingIds.has(m.id));
+            if (uniqueNew.length === 0) return prev;
+            const updated = [...prev, ...uniqueNew].sort(
+              (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+            );
+            return updated;
+          });
+        }
+      } catch (error) {
+        console.error('Polling error:', error);
+      }
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
+  }, [authToken, selectedChannelId]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      lastMessageIdRef.current = messages[messages.length - 1].id;
+    } else {
+      lastMessageIdRef.current = null;
+    }
+  }, [messages]);
 
   useEffect(() => {
     scrollToBottom();
@@ -2035,9 +2072,14 @@ export default function DiscordClient() {
 
   // Main app return
   return (
-    <div className="flex h-screen text-white">
+    <div className="flex h-screen text-white relative">
+      {/* Mobile Sidebar Overlay */}
+      <div 
+        className={`mobile-overlay ${isSidebarOpen ? 'open' : ''}`} 
+        onClick={() => setIsSidebarOpen(false)}
+      />
       {/* Server Sidebar */}
-      <nav className="w-[72px] glass-dark flex flex-col items-center py-3 gap-2 overflow-y-auto">
+      <nav className={`sidebar-container w-[72px] glass-dark flex flex-col items-center py-3 gap-2 overflow-y-auto ${isSidebarOpen ? 'open' : ''}`}>
         <button
           onClick={() => {
             setIsDMView(true);
@@ -2138,11 +2180,19 @@ export default function DiscordClient() {
       </nav>
 
       {/* Channel Sidebar */}
-      <aside className="w-60 glass-dark flex flex-col">
-        <header className="h-12 px-4 flex items-center border-b border-white/10">
+      <aside className={`sidebar-container w-60 glass-dark flex flex-col ${isSidebarOpen ? 'open' : ''}`} style={{ left: isSidebarOpen ? '72px' : '-100%', transitionDelay: '0.05s' }}>
+        <header className="h-12 px-4 flex items-center border-b border-white/10 justify-between">
           <h2 className="font-semibold text-base truncate text-white">
             {isDMView ? 'Direct Messages' : selectedGuild?.name || 'BotClienty'}
           </h2>
+          <button 
+            onClick={() => setIsSidebarOpen(false)}
+            className="md:hidden p-1 text-[#b5bac1] hover:text-[#dbdee1]"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </header>
 
         <div className="flex-1 overflow-y-auto p-2 space-y-[2px]">
@@ -2353,10 +2403,18 @@ export default function DiscordClient() {
       </aside>
 
       {/* Main Chat Area */}
-      <main className="flex-1 flex flex-col glass">
+      <main className="flex-1 flex flex-col glass min-w-0">
         {/* Chat Header */}
-        <header className="h-12 px-4 flex items-center border-b border-white/10">
-          <div className="flex items-center gap-2 flex-1">
+        <header className="h-12 px-4 flex items-center border-b border-white/10 gap-3">
+          <button
+            onClick={() => setIsSidebarOpen(true)}
+            className="md:hidden p-1 text-[#b5bac1] hover:text-[#dbdee1]"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             {selectedChannel && (
               <>
                 {isDMView ? (
