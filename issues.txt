@@ -1,1 +1,3 @@
 - The channel list is inaccessible on mobile devices
+- Member list is empty
+- The emoji button does not do anything
