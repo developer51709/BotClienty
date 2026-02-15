@@ -2405,18 +2405,26 @@ export default function DiscordClient() {
         </div>
       </aside>
 
+      {/* Mobile Toggle Button */}
+      <button
+        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+        className="md:hidden fixed top-3 left-4 z-[45] p-2 bg-[#313338] text-[#dbdee1] hover:text-white rounded-lg shadow-lg border border-[#1e1f22] transition-colors"
+      >
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col glass min-w-0">
         {/* Chat Header */}
         <header className="h-12 px-4 flex items-center border-b border-white/10 gap-3">
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="md:hidden p-1 text-[#b5bac1] hover:text-[#dbdee1] transition-colors"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
+          <div className="md:hidden w-10" /> {/* Spacer for mobile toggle button */}
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {selectedChannel && (
               <>
