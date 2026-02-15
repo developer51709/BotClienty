@@ -1669,14 +1669,16 @@ export default function DiscordClient() {
     if (!authToken || !selectedGuildId) return;
     setIsLoading(true);
     try {
-      const [channelData, roleData] = await Promise.all([
+      const [channelData, roleData, membersData] = await Promise.all([
         authedFetch<Channel[]>(authToken, `/guilds/${selectedGuildId}/channels`),
         authedFetch<Role[]>(authToken, `/guilds/${selectedGuildId}/roles`),
+        authedFetch<Member[]>(authToken, `/guilds/${selectedGuildId}/members?limit=100`),
       ]);
 
       const sortedChannels = [...channelData].sort((a, b) => (a.position ?? 0) - (b.position ?? 0));
       setChannels(sortedChannels);
       setRoles(roleData);
+      setMembers(membersData);
 
       const textChannels = sortedChannels.filter((c) => c.type === 0);
       if (!selectedChannelId || !textChannels.some((c) => c.id === selectedChannelId)) {
@@ -1684,6 +1686,7 @@ export default function DiscordClient() {
       }
     } catch (error) {
       console.error('Failed to load guild data:', error);
+      setToast({ message: 'Failed to load server data', type: 'error' });
     } finally {
       setIsLoading(false);
     }
@@ -2407,8 +2410,8 @@ export default function DiscordClient() {
         {/* Chat Header */}
         <header className="h-12 px-4 flex items-center border-b border-white/10 gap-3">
           <button
-            onClick={() => setIsSidebarOpen(true)}
-            className="md:hidden p-1 text-[#b5bac1] hover:text-[#dbdee1]"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            className="md:hidden p-1 text-[#b5bac1] hover:text-[#dbdee1] transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -2613,19 +2616,28 @@ export default function DiscordClient() {
                   <path d="M11.5 9H13v6h-1.5zM9 9H6c-.6 0-1 .5-1 1v4c0 .5.4 1 1 1h3v2H6c-1.1 0-2-.9-2-2V10c0-1.1.9-2 2-2h3v-1zm5 5H13V9h1c.6 0 1 .5 1 1v4c0 .5-.4 1-1 1h1v2h-1c-1.1 0-2-.9-2-2V10c0-1.1.9-2 2-2z" />
                 </svg>
               </button>
-              <button
-                type="button"
-                className="text-[#b5bac1] hover:text-[#dbdee1] transition-colors flex-shrink-0"
-                title="Emojis"
-              >
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
-                </svg>
-              </button>
-            </div>
-          </form>
-        </div>
-      </main>
+            <button
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="p-1 text-[#b5bac1] hover:text-[#dbdee1] transition-colors flex-shrink-0"
+              title="Emojis"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z" />
+              </svg>
+            </button>
+            {showEmojiPicker && (
+              <EmojiPicker
+                onSelect={(emoji) => {
+                  setMessageInput((prev) => prev + emoji);
+                  setShowEmojiPicker(false);
+                }}
+                onClose={() => setShowEmojiPicker(false)}
+              />
+            )}
+          </div>
+        </form>
+      </div>
+    </main>
 
       {/* Right Sidebar - Member List */}
       {!isDMView && showMemberList && selectedGuild && (
